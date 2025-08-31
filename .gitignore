@@ -2,7 +2,7 @@
 venv/
 __pycache__/
 *.pyc
-create_user.pyc
+create_user.py
 manage_users.py
 
 # Archivos de Sistema
