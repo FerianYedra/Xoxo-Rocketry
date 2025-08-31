@@ -2,8 +2,13 @@
 venv/
 __pycache__/
 *.pyc
+
+# Scripts de Utilidad (no deben estar en producción)
 create_user.py
 manage_users.py
+
+# Archivos de Datos Temporales o Locales
+database/temp.csv
 
 # Archivos de Sistema
 .DS_Store
