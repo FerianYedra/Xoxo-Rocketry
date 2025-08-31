@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor - XOXO Web</title> <!-- El título se cambiará con JS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" type="image/png" href="/static/images/favicon.svg">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main>
+        <!-- La imagen de fondo del hero se cargará dinámicamente -->
+        <section id="sponsor-hero" class="page-hero">
+            <div class="page-hero-overlay">
+                <div class="container">
+                    <img id="sponsor-logo-hero" src="" alt="Logo del Sponsor" class="hero-sponsor-logo">
+                    <h1 id="sponsor-name-hero">Cargando...</h1>
+                </div>
+            </div>
+        </section>
+
+        <section id="sponsor-info" class="container">
+            <div class="sponsor-detail-layout">
+                <div class="sponsor-bio">
+                    <h2>Nuestra Colaboración</h2>
+                    <p id="sponsor-bio"></p>
+                </div>
+                <div class="sponsor-cta">
+                    <h3>Visita su Sitio Web</h3>
+                    <p>Conoce más sobre la increíble labor de nuestros aliados.</p>
+                    <a id="sponsor-website" href="#" target="_blank" class="cta-button">Ir a su Página</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <div class="custom-cursor"></div>
+    <canvas id="particle-trail-canvas"></canvas>
+    <div class="star-container"></div> <!-- ¡Estrellas incluidas! -->
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sponsorId = parseInt(urlParams.get('id'));
+
+            // Hacemos el fetch a la API de sponsors
+            fetch('http://127.0.0.1:5001/api/sponsors')
+                .then(response => response.json())
+                .then(sponsorsData => {
+                    const sponsor = sponsorsData.find(s => s.id === sponsorId);
+
+                    if (sponsor) {
+                        document.title = `${sponsor.name} - Sponsor de XOXO`;
+                        document.getElementById('sponsor-hero').style.backgroundImage = `url('/${sponsor.image}')`;
+                        document.getElementById('sponsor-logo-hero').src = `/${sponsor.logo}`;
+                        document.getElementById('sponsor-logo-hero').alt = `Logo de ${sponsor.name}`;
+                        document.getElementById('sponsor-name-hero').textContent = sponsor.name;
+                        document.getElementById('sponsor-bio').textContent = sponsor.bio;
+                        document.getElementById('sponsor-website').href = sponsor.website;
+                    } else {
+                        document.getElementById('sponsor-name-hero').textContent = "Sponsor no encontrado";
+                    }
+                })
+                .catch(error => console.error('Error al cargar datos del sponsor:', error));
+        });
+    </script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

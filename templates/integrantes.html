@@ -1,0 +1,66 @@
+<!-- integrantes.html -->
+<!DOCTYPE html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Nuestros Integrantes - XOXO Web</title>
+      <link rel="stylesheet" href="static/css/style.css">
+      <link rel="icon" type="image/png" href="static/images/favicon.svg">
+   </head>
+   <body>
+      <div class="star-container"></div>
+      <div id="header-placeholder"></div>
+      <main>
+         <section class="page-hero" style="background-image: url('static/images/Gathering-wide.jpg');">
+            <div class="page-hero-overlay">
+               <div class="container">
+                  <h1>Nuestros Integrantes</h1>
+                  <p>El equipo detrás de cada lanzamiento. Conoce a las mentes que hacen posible este proyecto.</p>
+               </div>
+            </div>
+         </section>
+         <section id="team-grid-section" class="container">
+            <div id="integrantes-grid" class="team-grid">
+               <!-- El grid de integrantes se generará aquí por JavaScript -->
+            </div>
+         </section>
+      </main>
+      <div id="footer-placeholder"></div>
+      <div class="custom-cursor"></div>
+      <canvas id="particle-trail-canvas"></canvas>
+      <!-- Scripts -->
+      <!-- <script src="static/js/team-data.js"></script> -->
+      <script>
+         // Script para generar la cuadrícula
+         document.addEventListener("DOMContentLoaded", function() {
+             const grid = document.getElementById('integrantes-grid');
+             
+             // Hacemos un fetch a nuestro nuevo endpoint de la API
+             fetch('/api/team')
+                 .then(response => response.json())
+                 .then(teamData => { // Ahora 'teamData' viene de la API
+                     teamData.forEach(member => {
+                         const memberCard = document.createElement('a');
+                         memberCard.href = `bio?id=${member.id}`;
+                         memberCard.className = 'team-member-card';
+         
+                         memberCard.innerHTML = `
+                             <div class="card-image" style="background-image: url('${member.image}');"></div>
+                             <div class="card-content">
+                                 <h3>${member.name}</h3>
+                                 <p>${member.role}</p>
+                             </div>
+                         `;
+                         grid.appendChild(memberCard);
+                     });
+                 })
+                 .catch(error => console.error('Error al cargar los datos del equipo:', error));
+         });
+      </script>
+      <!-- El script de main.js se queda igual -->
+      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+      <script src="static/js/libs/vanilla-tilt.min.js"></script>
+      <script src="static/js/main.js"></script>
+   </body>
+</html>

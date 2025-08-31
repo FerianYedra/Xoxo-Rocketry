@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Acerca de Nosotros - XOXO Web</title>
+      <link rel="stylesheet" href="static/css/style.css">
+      <link rel="icon" type="image/png" href="static/images/favicon.svg">
+   </head>
+   <body>
+      <div class="star-container"></div>
+      <div id="header-placeholder"></div>
+      <main>
+         <section class="page-hero" style="background-image: url('static/images/Xoxoteam.JPG');">
+            <div class="page-hero-overlay">
+               <div class="container">
+                  <h1>Nuestra Identidad</h1>
+                  <p>Tradición, innovación y la conquista del cielo.</p>
+               </div>
+            </div>
+         </section>
+         <!-- Sección de Introducción y Etimología -->
+         <section id="introduction" class="container">
+            <div class="intro-content">
+               <h2>¿Quiénes Somos?</h2>
+               <p>Somos Ilihuícatl Xoxoauhco, un equipo multidisciplinario de estudiantes de la Universidad Iberoamericana unidos por una pasión: superar los límites de la cohetería deportiva. Nuestro nombre es un reflejo de nuestra misión, conectando la herencia ancestral de México con la tecnología de vanguardia.</p>
+               <div class="etymology-box" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+                  <h3><span>ILIHUÍCATL</span> <span>XOXOAUHCO</span></h3>
+                  <p>Del náhuatl, nuestro nombre se traduce como "Donde el Horizonte se Hace Azul". <strong>Ilhuicatl</strong> (cielo, firmamento) representa nuestro objetivo, mientras que <strong>Xoxoauhco</strong> (lugar verde o floreciente) simboliza nuestro origen y las ideas que cultivamos.</p>
+               </div>
+            </div>
+         </section>
+         <!-- El Decodificador de Símbolos Interactivo -->
+         <section id="symbol-decoder" class="container">
+            <div class="section-header">
+               <h2 class="section-title">Decodificando Nuestro Emblema</h2>
+               <p class="section-subtitle">Cada elemento de nuestro logo tiene un significado. Haz clic en los puntos para descubrir nuestra historia.</p>
+            </div>
+            <div class="decoder-layout">
+               <div class="interactive-logo-panel">
+                  <img src="static/images/logo_xoxo.svg" alt="Logo XOXO con Águila">
+                  <!-- Puntos Calientes (Hotspots) con posiciones corregidas -->
+                  <button class="hotspot" data-symbol="aguila" style="top: 50%; left: 50%;" aria-label="Explorar Águila"></button>
+                  <button class="hotspot" data-symbol="cohete" style="top: 65%; left: 50%;" aria-label="Explorar Cohete"></button>
+                  <button class="hotspot" data-symbol="ibero" style="top: 35%; left: 50%;" aria-label="Explorar Ibero"></button>
+                  <button class="hotspot" data-symbol="ilhuicatl" style="top: 15%; left: 50%;" aria-label="Explorar Ilhuicatl"></button>
+                  <button class="hotspot" data-symbol="xoxoauhco" style="top: 85%; left: 50%;" aria-label="Explorar Xoxoauhco"></button>
+               </div>
+               <div class="explanation-panel">
+                  <h3 id="symbol-title">Haz clic en un punto</h3>
+                  <p id="symbol-description">Selecciona un elemento del logo para conocer su significado.</p>
+               </div>
+            </div>
+         </section>
+      </main>
+      <section id="emblems-gallery" class="container">
+         <div class="section-header">
+            <h2 class="section-title">Nuestros Emblemas</h2>
+            <p class="section-subtitle">Dos parches, una misma misión. Cada uno representa una etapa de nuestro viaje.</p>
+         </div>
+         <div class="emblems-grid">
+            <div class="emblem-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+               <img src="static/images/logo_xoxo.svg" alt="Emblema oficial del equipo">
+               <h4>Emblema Oficial</h4>
+               <p>Representa la unión de la herencia mexicana con la innovación aeroespacial.</p>
+            </div>
+            <div class="emblem-card" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+               <img src="static/images/parche_xoxo.svg" alt="Parche de misión con transbordador">
+               <h4>Parche de Misión</h4>
+               <p>Conmemora nuestra participación y colaboración internacional en la competencia.</p>
+            </div>
+         </div>
+      </section>
+      <div id="footer-placeholder"></div>
+      <div class="custom-cursor"></div>
+      <canvas id="particle-trail-canvas"></canvas>
+      <script src="static/js/libs/vanilla-tilt.min.js"></script>
+      <!-- <script src="static/js/team-data.js"></script> -->
+      <script src="static/js/main.js"></script>
+      <!-- Script específico para esta página -->
+      <script>
+         document.addEventListener('DOMContentLoaded', () => {
+             const symbolData = {
+         aguila: {
+         title: 'Águila Real',
+         description: 'Representa la fuerza, valentía y orgullo nacional de México. Connota visión y liderazgo, valores que el equipo proyecta en la cohetería deportiva.'
+         },
+         cohete: {
+         title: 'Cohete Tricolor',
+         description: 'Simboliza la unión entre tradición (el águila) y la innovación tecnológica. Sus colores refuerzan nuestra identidad como representantes de México.'
+         },
+         ibero: {
+         title: 'Palabra "IBERO"',
+         description: 'Señala nuestra casa, la Universidad Iberoamericana, reforzando el respaldo académico y la identidad universitaria que nos impulsa.'
+         },
+         ilhuicatl: {
+         title: 'Franja Superior "ILHUICATL"',
+         description: 'Del náhuatl "cielo" o "firmamento", vincula nuestro proyecto con las raíces culturales de México y con la meta de alcanzar el cielo mediante la cohetería.'
+         },
+         xoxoauhco: {
+         title: 'Franja Inferior "XOXOAUHCO"',
+         description: 'Proviene del náhuatl "lugar donde abundan las flores". Representa nuestro origen cultural y geográfico, integrando la herencia ancestral en un contexto tecnológico.'
+         }
+         };
+         
+             const hotspots = document.querySelectorAll('.hotspot');
+             const titleEl = document.getElementById('symbol-title');
+             const descriptionEl = document.getElementById('symbol-description');
+         
+             hotspots.forEach(hotspot => {
+                 hotspot.addEventListener('click', () => {
+                     hotspots.forEach(h => h.classList.remove('active'));
+                     hotspot.classList.add('active');
+         
+                     const symbolKey = hotspot.dataset.symbol;
+                     const data = symbolData[symbolKey];
+                     
+                     titleEl.textContent = data.title;
+                     descriptionEl.textContent = data.description;
+                 });
+             });
+         });
+      </script>
+   </body>
+</html>

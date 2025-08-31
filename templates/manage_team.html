@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Integrantes - Panel de Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Estilos compartidos con manage_sponsors.html */
+        .admin-header { background-color: var(--secondary-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .admin-header .container { display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 1.5rem; color: white; }
+        .admin-header a { color: var(--accent-color); text-decoration: none; }
+        .content-container { max-width: 1200px; margin: 4rem auto; }
+        .page-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title h2 { color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--accent-color); }
+        td img { max-height: 40px; border-radius: 50%; width: 40px; object-fit: cover; }
+        .actions a, .actions button { margin-right: 0.5rem; color: var(--accent-color); text-decoration: none; background: none; border: none; cursor: pointer; font-size: 1rem; }
+        .actions form { display: inline; }
+    </style>
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <div class="container">
+            <h1>Gestionar Integrantes</h1>
+            <div>
+                <a href="{{ url_for('admin_panel') }}" style="margin-right: 1rem;">Volver al Panel</a>
+                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container content-container">
+        <div class="page-title">
+            <h2>Lista de Integrantes del Equipo</h2>
+            <a href="{{ url_for('add_member') }}" class="cta-button">Añadir Nuevo Integrante</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p style="color: {{ 'var(--accent-color)' if category == 'success' else 'var(--danger-color)' }}; margin-bottom: 1rem;">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in team %}
+                <tr>
+                    <td><img src="/{{ member.image }}" alt="Foto de {{ member.name }}"></td>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.role }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('edit_member', member_id=member.id) }}">Editar</a>
+                        <form method="POST" action="{{ url_for('delete_member', member_id=member.id) }}" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a este integrante?');">
+                            <button type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

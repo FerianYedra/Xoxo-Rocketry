@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-header { background-color: var(--secondary-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .admin-header .container { display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 1.5rem; color: white; }
+        .admin-header a { color: var(--accent-color); text-decoration: none; font-weight: 500; }
+        
+        .admin-welcome { text-align: center; padding: 4rem 0 2rem 0; }
+        .admin-welcome h2 { font-size: 2.5rem; color: white; }
+        .admin-welcome p { font-size: 1.1rem; color: var(--text-color); }
+
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; padding-bottom: 4rem; }
+        .admin-card {
+            background-color: var(--secondary-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(88, 166, 255, 0.1);
+        }
+        .admin-card h3 { color: white; margin-bottom: 0.5rem; font-size: 1.5rem; }
+        .admin-card p { flex-grow: 1; margin-bottom: 1.5rem; color: var(--text-color); }
+        .admin-card a.cta-button { text-align: center; }
+    </style>
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <div class="container">
+            <h1>Panel de Administración XOXO</h1>
+            <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-welcome">
+            <!-- current_user está disponible globalmente en las plantillas gracias a Flask-Login -->
+            <h2>Bienvenido, {{ current_user.name }}</h2>
+            <p>Desde aquí puedes gestionar el contenido y la información del sitio web.</p>
+        </div>
+
+        <div class="admin-grid">
+            <!-- Tarjeta 1: Mi Perfil (Visible para todos) -->
+            <div class="admin-card">
+                <h3>Mi Perfil</h3>
+                <p>Actualiza tu información personal que se muestra en el sitio público, como tu biografía y tus enlaces.</p>
+                <a href="{{ url_for('edit_profile') }}" class="cta-button">Modificar mi Perfil</a>
+            </div>
+
+            <!-- Tarjeta 2: Gestión de Contenido (Visible para todos) -->
+            <div class="admin-card">
+                <h3>Gestión de Contenido</h3>
+                <p>Modifica la noticia principal que aparece en la página de inicio para mantener informada a nuestra comunidad.</p>
+                <a href="{{ url_for('edit_news') }}" class="cta-button">Actualizar Noticia</a>
+            </div>
+            
+            <!-- Tarjeta 3: Gestión de Sponsors (Visible para todos) -->
+             <div class="admin-card">
+                <h3>Gestión de Sponsors</h3>
+                <p>Añade, edita o elimina patrocinadores de la lista que se muestra en el sitio público.</p>
+                <a href="{{ url_for('manage_sponsors') }}" class="cta-button">Gestionar Sponsors</a>
+            </div>
+
+            <div class="admin-card">
+                <h3>Seguridad</h3>
+                <p>Actualiza tu contraseña de acceso al panel de administración para mantener tu cuenta segura.</p>
+                <a href="{{ url_for('change_password') }}" class="cta-button">Cambiar Contraseña</a>
+            </div>
+
+            <!-- =============================================== -->
+            <!-- SECCIÓN SOLO PARA ADMINISTRADORES -->
+            <!-- =============================================== -->
+            {% if current_user.role == 'admin' %}
+            <div class="admin-card">
+                <h3>Gestión de Integrantes</h3>
+                <p>Añade nuevos miembros al equipo o elimina perfiles que ya no están activos.</p>
+                <a href="{{ url_for('manage_team') }}" class="cta-button">Gestionar Integrantes</a>
+            </div>
+
+            <div class="admin-card">
+                <h3>Registros del Sistema</h3>
+                <p>Visualiza el registro de todos los cambios importantes realizados en el panel de administración.</p>
+                <a href="{{ url_for('view_changelog') }}" class="cta-button secondary">Ver Log de Cambios</a>
+            </div>
+            {% endif %}
+            <!-- =============================================== -->
+        </div>
+    </main>
+</body>
+</html>

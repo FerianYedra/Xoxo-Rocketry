@@ -1,0 +1,9 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+create_user.pyc
+manage_users.py
+
+# Archivos de Sistema
+.DS_Store

@@ -1,0 +1,1826 @@
+:root {
+    --primary-color: #0d1117;
+    --secondary-color: #161b22;
+    --accent-color: #58a6ff;
+    --text-color: #c9d1d9;
+    --border-color: #30363d;
+    --shadow-color: rgba(88, 166, 255, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* =============== EFECTO DE ESTRELLAS =============== */
+.star-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Asegura que no se pueda hacer clic en el fondo */
+    z-index: -1; /* Lo pone detrás de todo el contenido */
+    overflow: hidden; /* Previene barras de scroll si una estrella se sale */
+}
+
+.star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: twinkle 5s infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+/* ================================================== */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ======================================================= */
+/* ========== ESTILOS DE NAVEGACIÓN CORREGIDOS ========== */
+/* ======================================================= */
+
+header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: rgba(13, 17, 23, 0.9);
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 85px;
+}
+
+.logo img {
+    max-height: 45px;
+    transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+    transform: scale(1.05);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+/* --- REGLAS GENERALES PARA LOS ENLACES DEL NAV --- */
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: white;
+}
+
+/* --- LÍNEA AZUL HORIZONTAL --- */
+/* 1. Definimos la línea, aplicada al LI para mantener el hover */
+.nav-links > li > a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--accent-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* 2. Mostramos la línea cuando se hace hover en el LI padre */
+.nav-links > li:hover > a::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+
+/* --- SECCIÓN DEL MENÚ DESPLEGABLE (SIMPLIFICADA) --- */
+.dropdown {
+    position: relative;
+}
+
+/* REGLA DE FLECHA ELIMINADA */
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(22, 27, 34, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 8px 8px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    list-style: none;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-menu::before { /* Puente invisible */
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: transparent;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-menu li {
+    padding: 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    /* Devolvemos el padding original a los lados */
+    padding: 0.75rem 1.5rem; 
+}
+
+/* REGLA DE INDICADOR VERTICAL ELIMINADA */
+
+.dropdown-menu a:hover {
+    background-color: var(--accent-color);
+    color: var(--primary-color) !important;
+}
+
+main {
+    padding: 0rem 0 4rem 0;
+}
+
+section {
+    margin-bottom: 4rem;
+}
+
+#hero {
+    /* Ocupa el 100% de la altura de la ventana menos la altura del header */
+    min-height: calc(100vh - 85px); /* Ajusta 85px si la altura de tu header es diferente */
+    display: flex;
+    align-items: center;
+    position: relative; /* Necesario para el indicador de scroll */
+    overflow: hidden; /* Evita desbordamientos */
+}
+
+.hero-content-area {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.hero-text {
+    flex: 0 0 55%; /* Ocupa el 55% del ancho */
+    padding-right: 4rem;
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.hero-text h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem); /* Texto responsivo */
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.hero-text p {
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.cta-button {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #79c0ff;
+    transform: translateY(-3px);
+}
+
+.hero-image {
+    flex: 0 0 45%;
+    height: 60vh;
+    min-height: 500px;
+    
+    /* La imagen de fondo ya no es necesaria, la eliminamos */
+    /* background: url('../images/XoxoteamB.JPG') no-repeat center center/cover; */
+    
+    clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+    animation: zoomIn 1.2s ease-out forwards;
+    
+    /* ¡AÑADE ESTA LÍNEA! */
+    overflow: hidden; 
+}
+
+.image-filmstrip {
+    /* Usamos 8 imágenes (4 originales + 4 duplicadas), así que el ancho total es 800% */
+    width: 800%; 
+    height: 100%;
+    display: flex;
+    /* Aplicamos la animación */
+    animation: scroll-horizontal 40s linear infinite;
+}
+
+.image-filmstrip img {
+    /* Cada imagen ocupa 1/8 del ancho total del filmstrip */
+    width: 12.5%; 
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra el espacio sin deformarse */
+    flex-shrink: 0; /* Evita que las imágenes se encojan */
+}
+
+/* Pausar la animación al pasar el ratón por encima */
+.hero-image:hover .image-filmstrip {
+    animation-play-state: paused;
+}
+
+
+/* Definición de la animación de scroll */
+@keyframes scroll-horizontal {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        /* Movemos la cinta hacia la izquierda por la mitad de su ancho total (el ancho de la serie original de imágenes) */
+        transform: translateX(-50%);
+    }
+}
+
+/* Indicador de scroll */
+.scroll-down-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    animation: bounce 2s infinite;
+}
+
+.scroll-down-indicator span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    40% {
+        transform: translateX(-50%) translateY(-15px);
+    }
+    60% {
+        transform: translateX(-50%) translateY(-7px);
+    }
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.timer {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.timer-unit {
+    background: var(--secondary-color);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.timer-value {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.timer-label {
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: var(--secondary-color);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.sponsor-logo {
+    height: 80px;
+    margin-bottom: 1rem;
+}
+
+footer {
+    background-color: var(--secondary-color);
+    padding: 3rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.footer-logos {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.footer-logos img {
+    height: 50px;
+    margin: 0 1rem;
+}
+
+.footer-bottom {
+    text-align: center;
+}
+
+.mobile-menu-toggle {
+    display: none; /* Oculto en escritorio */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001; /* Debe estar por encima del menú */
+}
+
+.mobile-menu-toggle .bar {
+    display: block;
+    width: 25px;
+    height: 2px;
+    margin: 5px auto;
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Media Query: Se aplica en pantallas de 992px o menos */
+@media (max-width: 992px) {
+    .mobile-menu-toggle {
+        display: block; /* Hacemos visible el botón de hamburguesa */
+    }
+
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        /* Empieza fuera de la pantalla a la derecha */
+        left: 100%;
+        width: 100%;
+        height: 100vh;
+        background-color: var(--primary-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    /* Clase 'active' que moverá el menú a la vista */
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-links {
+        flex-direction: column; /* Apilamos los links verticalmente */
+        text-align: center;
+    }
+
+    .nav-links a {
+        font-size: 2rem; /* Hacemos los links más grandes y fáciles de tocar */
+    }
+
+    /* Animación de la hamburguesa a 'X' */
+    .mobile-menu-toggle.active .bar:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-menu-toggle.active .bar:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-menu-toggle.active .bar:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+}
+
+/* Dentro de @media (max-width: 992px) */
+@media (max-width: 992px) {
+    /* ... tus otros estilos móviles ... */
+
+    /* === AJUSTES PARA EL DESPLEGABLE EN MÓVIL === */
+    /*.dropdown {
+        /* No necesitamos nada especial para el contenedor en móvil 
+    }*/
+
+    /* Ocultamos la flecha del desplegable */
+    .dropdown > a::after {
+        display: none;
+    }
+
+    /* Hacemos que el menú desplegable sea parte del flujo normal */
+    .dropdown-menu {
+        position: static; /* MUY IMPORTANTE: Reseteamos la posición */
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        box-shadow: none;
+        background: none;
+        padding-left: 1.5rem; /* Indentamos los sub-items */
+    }
+
+    .dropdown-menu a {
+        font-size: 1.5rem; /* Un poco más pequeño que los links principales */
+        padding: 0.5rem 0;
+    }
+
+    .dropdown-menu a:hover {
+        background: none; /* Quitamos el fondo al hacer hover */
+        color: var(--accent-color) !important;
+    }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS GENERALES PARA SECCIONES DEL BODY ========== */
+/* ======================================================= */
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2.8rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-color);
+}
+
+
+/* ======================================================= */
+/* ========== ESTILOS PARA LAUNCH SEQUENCE (TEMPORIZADOR) ========== */
+/* ======================================================= */
+#countdown {
+    padding-top: 4rem;
+}
+
+.mission-status-panel {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 2rem;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    align-items: center;
+}
+
+.mission-details h3 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.mission-details ul {
+    list-style: none;
+}
+
+.mission-details li {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.mission-details li span {
+    font-weight: bold;
+    color: white;
+    margin-right: 0.5rem;
+}
+
+.timer {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.timer-unit {
+    background-color: var(--primary-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 100px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 15px rgba(88, 166, 255, 0.1);
+}
+
+.timer-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.timer-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--accent-color);
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA SPONSORS (PROPELLED BY) ========== */
+/* ======================================================= */
+
+#sponsors {
+    padding: 4rem 0;
+}
+
+.logo-scroller {
+    overflow: hidden;
+    padding: 2rem 0;
+    /* Degradado en los bordes para un efecto de desvanecimiento */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+}
+
+.logo-track {
+    display: flex;
+    width: calc(250px * 8); /* Ancho del slide * número de slides (originales+duplicados) */
+    animation: scroll-logos 30s linear infinite;
+}
+
+.logo-slide {
+    width: 250px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem;
+}
+
+.logo-slide img {
+    max-width: 100%;
+    max-height: 100%;
+    filter: grayscale(100%) brightness(1.5); /* Monocromático y más claro */
+    transition: filter 0.3s ease;
+}
+
+.logo-slide:hover img {
+    filter: grayscale(0%) brightness(1); /* Color original al pasar el ratón */
+}
+
+@keyframes scroll-logos {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-250px * 4)); } /* Desplaza la longitud de la serie original */
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA NOTICIAS (MISSION LOGS) ========== */
+/* ======================================================= */
+
+#news {
+    padding: 4rem 0;
+}
+
+.featured-news {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.featured-news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.featured-news-content .news-meta {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.featured-news-content h3 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.featured-news-content p {
+    margin-bottom: 1.5rem;
+}
+
+.read-more-btn {
+    display: inline-block;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: bold;
+    border: 1px solid var(--accent-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.read-more-btn:hover {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+.news-archive h4 {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.news-archive ul {
+    list-style: none;
+}
+
+.news-archive a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.news-archive a:hover {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.news-archive a span {
+    font-weight: 500;
+}
+
+/* ======================================================= */
+/* ========== RESPONSIVIDAD PARA SECCIONES DEL BODY ========== */
+/* ======================================================= */
+
+@media (max-width: 992px) {
+    .mission-status-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .featured-news {
+        grid-template-columns: 1fr;
+    }
+
+    .featured-news-image {
+        order: -1; /* Mueve la imagen arriba en móvil */
+    }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS DEL NUEVO FOOTER "VISTA ORBITAL" ========== */
+/* ======================================================= */
+
+#site-footer {
+    position: relative;
+    padding-top: 100px; /* Espacio para la curva */
+    padding-bottom: 2rem;
+    background-color: #05080a;
+    color: var(--text-color);
+    overflow-x: hidden;
+    /* Puedes añadir una imagen de fondo sutil aquí si quieres 
+    background-image: url('../images/earth-orbit.jpg');
+    background-size: cover;
+    background-position: top center; */
+}
+
+/* La curva mágica */
+.footer-separator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: var(--primary-color); /* El color del fondo de la página */
+    clip-path: polygon(100% 100%, 0 100%, 0 0, 50% 100%); /* Intenta jugar con estos valores */
+    /* Una forma más suave con SVG sería ideal, pero esto funciona bien */
+     clip-path: path('M 0 0 C 40 100, 60 100, 100 0 L 100 100 L 0 100 Z');
+    transform: scaleX(2.5) scaleY(1.5);
+}
+
+.footer-main {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 2rem;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr 1.5fr; /* Columnas con anchos diferentes */
+    gap: 2.5rem;
+}
+
+.footer-column h4 {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+/* Línea decorativa debajo de los títulos del footer */
+.footer-column h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 30px;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column ul li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-column a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+    color: var(--accent-color);
+}
+
+.footer-logo img {
+    max-height: 40px;
+    margin-bottom: 1rem;
+}
+
+.about-column p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.dates-column li {
+    display: flex;
+}
+.dates-column li strong {
+    color: white;
+    margin-right: 0.5rem;
+}
+
+/* Estilos para los iconos de Redes Sociales */
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: translateY(-3px);
+}
+
+
+/* Usando mask para los SVGs de los iconos (ejemplo con Instagram) */
+.social-links i {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    transition: background-color 0.3s ease;
+
+    /* Nuevas propiedades para corregir el recorte */
+    -webkit-mask-size: 100% 100%; /* Cambiado a 100% 100% */
+    mask-size: 100% 100%; /* Cambiado a 100% 100% */
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+.social-links a:hover i {
+    background-color: var(--primary-color);
+}
+
+/* Iconos específicos */
+.social-links a[aria-label="Instagram"] i {
+    /* ... (SVG de Instagram) ... */
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8z'/%3E%3C/svg%3E");
+}
+
+.social-links a[aria-label="TikTok"] i {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 122.8 122.8V209.9z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 122.8 122.8V209.9z'/%3E%3C/svg%3E");
+}
+
+.social-links a[aria-label="Youtube"] i {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 42.3 48.3 48.6C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.9 48.3-48.6 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232 341.5V170.5L376 256 232 341.5z'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 42.3 48.3 48.6C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.9 48.3-48.6 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zM232 341.5V170.5L376 256 232 341.5z'/%3E%3C/svg%3E");
+}
+/* Agrega aquí los SVGs para TikTok y Youtube de manera similar */
+
+.email-link {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.footer-bottom {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.partner-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.partner-logos img {
+    height: 40px;
+    filter: grayscale(100%) opacity(0.7);
+    transition: filter 0.3s ease;
+}
+
+.partner-logos img:hover {
+    filter: grayscale(0%) opacity(1);
+}
+
+.copyright-text {
+    font-size: 0.9rem;
+}
+
+/* Responsividad del Footer */
+@media (max-width: 992px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .footer-column h4::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .social-links {
+        justify-content: center;
+    }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA CURSOR INTERACTIVO ORBITAL ========== */
+/* ======================================================= */
+
+/* Ocultamos el cursor por defecto en toda la página */
+body:not(.admin-page) * {
+    cursor: none;
+}
+
+.custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 35px; /* Ligeramente más grande para que el SVG se vea bien */
+    height: 35px;
+    
+    /* === CAMBIOS PRINCIPALES AQUÍ === */
+    /* 1. Eliminamos el color de fondo y el clip-path */
+    /* background-color: white; */
+    /* clip-path: polygon(50% 0%, 0% 100%, 100% 100%); */
+
+    /* 2. Usamos tu SVG como imagen de fondo */
+    background-image: url('../images/cursor-delta-c.svg');
+    background-size: contain; /* Asegura que el SVG encaje completamente */
+    background-repeat: no-repeat;
+    background-position: center;
+    /* === FIN DE LOS CAMBIOS === */
+    
+    pointer-events: none; 
+    z-index: 9999; 
+    transition: transform 0.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease;
+}
+
+/* Estado de hover cuando está sobre un enlace o botón */
+.custom-cursor.hovered {
+    transform: scale(1.5) rotate(45deg);
+    opacity: 0.7;
+}
+
+/* El lienzo para las partículas */
+#particle-trail-canvas {
+    position: fixed;
+    margin-top: 10px;
+    margin-left: 10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998; /* Justo debajo del cursor delta */
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA LA PÁGINA "CONCURSO 2024" ========== */
+/* ======================================================= */
+
+/* Hero de Página Interna */
+.page-hero {
+    position: relative;
+    height: 40vh;
+    background-size: cover;
+    background-position: center top;
+    color: white;
+}
+
+.page-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(13, 17, 23, 1) 0%, rgba(13, 17, 23, 0.4) 100%);
+    display: flex;
+    align-items: flex-end; /* Alinea el contenido abajo */
+    padding-bottom: 4rem;
+}
+
+.page-hero h1 {
+    font-size: 3.5rem;
+}
+
+/* Sección de Logros */
+#achievements {
+    padding: 4rem 0;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.achievement-card {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.achievement-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+.achievement-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+.achievement-card h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+/* Línea de Tiempo */
+#mission-timeline {
+    padding: 4rem 0;
+}
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+/* La línea vertical central */
+.timeline::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    background-color: var(--border-color);
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -1.5px;
+}
+.timeline-item {
+    padding: 10px 40px;
+    position: relative;
+    width: 50%;
+}
+/* El punto en la línea */
+.timeline-dot {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    right: -7.5px;
+    background-color: white;
+    border: 3px solid var(--accent-color);
+    top: 25px;
+    border-radius: 50%;
+    z-index: 1;
+}
+/* Items a la izquierda */
+.timeline-item:nth-child(odd) {
+    left: 0;
+    text-align: right;
+}
+/* Items a la derecha */
+.timeline-item:nth-child(even) {
+    left: 50%;
+}
+.timeline-item:nth-child(even) .timeline-dot {
+    left: -7.5px;
+}
+.timeline-content {
+    padding: 20px 30px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    position: relative;
+}
+.timeline-date {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+.timeline-content h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+.timeline-media {
+    margin-top: 1rem;
+}
+.timeline-media img, .timeline-media iframe {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+/* Llamado a la Acción Final */
+#next-mission-cta {
+    padding: 4rem 0;
+}
+.cta-box {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+}
+.cta-box h2 {
+    font-size: 2.5rem;
+    color: white;
+}
+.cta-box p {
+    margin: 1rem 0 2rem 0;
+}
+
+/* Responsividad de la línea de tiempo */
+@media (max-width: 768px) {
+    .timeline::after {
+        left: 20px;
+    }
+    .timeline-item {
+        width: 100%;
+        padding-left: 60px;
+        padding-right: 15px;
+        left: 0 !important;
+        text-align: left !important;
+    }
+    .timeline-dot {
+        left: 12.5px !important;
+    }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA PÁGINAS DE INTEGRANTES ========== */
+/* ======================================================= */
+
+/* Grid de Integrantes */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 4rem 0;
+}
+
+.team-member-card {
+    text-decoration: none;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-member-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.card-image {
+    height: 300px;
+    background-size: cover;
+    background-position: top;
+    transition: transform 0.4s ease;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-content h3 {
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA EL DOSSIER DE MISIÓN (bio.html) ========== */
+/* ======================================================= */
+
+/* Layout principal del Dossier */
+.dossier-layout {
+    display: grid;
+    grid-template-columns: 40% 60%; /* Columna fija a la izquierda, contenido a la derecha */
+}
+
+/* Columna Izquierda (Foto) */
+.dossier-photo-panel {
+    position: sticky; /* ¡La clave del efecto! */
+    top: 85px; /* Altura del header */
+    height: calc(100vh - 85px); /* Ocupa toda la altura visible */
+    overflow: hidden; /* Oculta el desbordamiento de la imagen parallax */
+    animation: slideInFromLeft 1s ease-out;
+}
+
+.dossier-photo-panel img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Añade esta línea para alinear la imagen arriba */
+    object-position: top; 
+    z-index: 1;
+}
+
+.photo-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(13, 17, 23, 0.8) 0%, transparent 50%);
+    z-index: 2;
+}
+
+.photo-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 3;
+    padding: 2rem;
+    color: white;
+}
+
+#member-name-photo {
+    font-size: 3rem;
+}
+
+#member-role-photo {
+    font-size: 1.2rem;
+}
+
+/* Columna Derecha (Contenido) */
+.dossier-content-panel {
+    padding: 4rem 0;
+    animation: fadeInContent 1s 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+.bio-section {
+    margin-bottom: 3rem;
+}
+
+.bio-section h2 {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#member-bio {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Etiquetas de Enfoque */
+.focus-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.focus-tag {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ESTE CÓDIGO DEBE ESTAR EN style.css */
+
+/* Estilos para los botones de enlace en la bio */
+.social-links-bio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.bio-link-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--accent-color);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.bio-link-button:hover {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    transform: translateY(-3px);
+}
+
+/* Responsividad del Dossier */
+@media (max-width: 992px) {
+    .dossier-layout {
+        grid-template-columns: 1fr; /* Apila las columnas en móvil */
+    }
+    .dossier-photo-panel {
+        position: relative; /* Desactiva el efecto sticky */
+        top: auto;
+        height: 60vh; /* Altura fija para el encabezado */
+    }
+}
+
+/* Animaciones de Entrada */
+@keyframes slideInFromLeft {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes fadeInContent {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA LA PÁGINA "ACERCA DE NOSOTROS" ========== */
+/* ======================================================= */
+
+/* Sección de Introducción y Etimología */
+#introduction {
+    padding: 4rem 0;
+    text-align: center;
+}
+.intro-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.intro-content h2 {
+    font-size: 2.8rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+.etymology-box {
+    margin-top: 2.5rem;
+    padding: 2rem;
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    /* Añade estas dos líneas para el efecto 3D y la transición */
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.etymology-box:hover {
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+.etymology-box h3 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+.etymology-box h3 span:first-child {
+    color: var(--accent-color);
+}
+
+/* Sección del Decodificador de Símbolos */
+#symbol-decoder {
+    padding: 4rem 0;
+}
+.decoder-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+.interactive-logo-panel {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.interactive-logo-panel img {
+    max-width: 80%;
+    height: auto;
+}
+.hotspot {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+.hotspot:hover, .hotspot.active {
+    transform: scale(1.5);
+    background-color: white;
+    animation-play-state: paused;
+}
+.explanation-panel {
+    border-left: 3px solid var(--accent-color);
+    padding-left: 2rem;
+}
+.explanation-panel h3 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+.explanation-panel p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Responsividad para el Decodificador */
+@media (max-width: 992px) {
+    .decoder-layout {
+        grid-template-columns: 1fr;
+    }
+    .interactive-logo-panel {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Animación de Pulso para los Hotspots */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(88, 166, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(88, 166, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(88, 166, 255, 0);
+    }
+}
+
+/* Galería de Emblemas */
+#emblems-gallery {
+    padding: 4rem 0;
+}
+
+.emblems-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.emblem-card {
+    text-align: center;
+    background-color: var(--secondary-color);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.emblem-card:hover {
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.emblem-card img {
+    max-height: 250px;
+    margin-bottom: 1.5rem;
+}
+
+.emblem-card h4 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .emblems-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA PÁGINAS DE SPONSORS ========== */
+/* ======================================================= */
+
+/* Grid de Sponsors */
+.sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    padding: 4rem 0;
+}
+
+.sponsor-card {
+    text-decoration: none;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ¡Efecto de Glow! */
+.sponsor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.sponsor-card .card-image {
+    transition: transform 0.4s ease;
+}
+
+.sponsor-card:hover .card-image {
+    transform: scale(1.05);
+}
+
+.sponsor-card .card-content {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.card-logo {
+    height: 50px;
+    width: 50px;
+    object-fit: contain;
+    flex-shrink: 0;
+    /* Nuevas líneas: */
+    text-align: center;
+    font-size: 0.7rem;
+    line-height: 1;
+    color: var(--text-color);
+}
+
+.card-content h3 {
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* Página de Detalle del Sponsor */
+.hero-sponsor-logo {
+    max-height: 80px;
+    margin-bottom: 1rem;
+}
+
+#sponsor-info {
+    padding: 4rem 0;
+}
+
+.sponsor-detail-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.sponsor-bio h2 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.sponsor-bio p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.sponsor-cta {
+    background-color: var(--secondary-color);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+
+    /* --- AÑADE ESTAS LÍNEAS --- */
+    display: flex;              /* 1. Activa Flexbox */
+    flex-direction: column;     /* 2. Apila los elementos verticalmente */
+    gap: 1.5rem;                /* 3. Crea un espacio de 1.5rem ENTRE CADA ELEMENTO */
+    text-align: center;         /* 4. (Opcional) Centra todo para un look más limpio */
+}
+
+.sponsor-cta h3 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .sponsor-detail-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ======================================================= */
+/* ========== ESTILOS PARA EL DASHBOARD DE MISIÓN (v2) ========== */
+/* ======================================================= */
+
+#dashboard-main .container { max-width: 1600px; }
+
+.dashboard-header {
+    padding: 4rem 0 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+.dashboard-header h1 { font-size: 2.5rem; color: white; }
+
+/* ... (Las reglas de .view-tabs, .tab-button, etc. se quedan igual) ... */
+/* Confirma o añade estas reglas */
+.view-tabs { display: flex; gap: 1rem; }
+.tab-button {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.tab-button:hover, .tab-button.active {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    border-color: var(--accent-color);
+}
+
+.dashboard-view {
+    display: none; /* Oculto por defecto */
+}
+.dashboard-view.active {
+    display: block; /* Solo la vista activa es visible */
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto 1fr auto; /* 3 filas: KPIs, Visualización, Controles */
+    gap: 1.5rem;
+    padding-bottom: 4rem;
+}
+.widget {
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d; /* Para Vanilla Tilt */
+}
+.widget:hover {
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.widget-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.widget h2 { font-size: 2.8rem; color: white; }
+.widget .unit { font-size: 1.2rem; color: var(--accent-color); margin-left: 0.5rem; }
+
+/* Fila 2: Visualización */
+.live-renderer-widget { grid-column: span 1; }
+#live-renderer-container { flex-grow: 1; border-radius: 8px; overflow: hidden; }
+.map-widget { grid-column: span 2; }
+#map { height: 100%; min-height: 350px; border-radius: 8px; }
+.camera-widget { grid-column: span 1; }
+#camera-feed { flex-grow: 1; background-color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #555; }
+
+/* Fila 3: Controles y Gráficos */
+.controls-widget { grid-column: span 1; justify-content: space-between; }
+.control-buttons { display: flex; flex-direction: column; gap: 1rem; }
+.graph-widget { grid-column: span 3; min-height: 350px;}
+.graph-header { display: flex; justify-content: space-between; align-items: center; }
+.graph-selectors { display: flex; gap: 1rem; }
+.canvas-container { flex-grow: 1; position: relative; min-height: 150px; }
+canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* Visor 3D Interactivo */
+#interactive-renderer-container {
+    width: 100%;
+    height: 0; /* Por defecto no tiene altura */
+    border-radius: 12px;
+    overflow: hidden;
+}
+#view-3d.active #interactive-renderer-container {
+    height: 75vh; /* Solo le damos altura cuando la vista 3D está activa */
+}
+
+/* Responsividad */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto auto auto auto;
+    }
+    .live-renderer-widget, .camera-widget { grid-column: span 1; }
+    .map-widget, .graph-widget { grid-column: span 2; }
+    .controls-widget { grid-column: span 2; }
+}
+@media (max-width: 768px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .live-renderer-widget, .map-widget, .camera-widget, .graph-widget, .controls-widget {
+        grid-column: span 1;
+    }
+}
+
+/* Estilos para los selectores del gráfico */
+.graph-selectors {
+    display: flex;
+    background-color: var(--primary-color);
+    border-radius: 20px;
+    padding: 4px;
+}
+.graph-selectors label {
+    flex-grow: 1;
+    text-align: center;
+    padding: 0.5rem 1rem;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+/* Ocultamos el radio button real */
+.graph-selectors input[type="radio"] {
+    display: none;
+}
+/* Estilo para el label cuando el radio button está seleccionado */
+.graph-selectors input[type="radio"]:checked + label {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    font-weight: bold;
+}

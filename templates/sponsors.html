@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Nuestros Sponsors - XOXO Web</title>
+      <link rel="stylesheet" href="static/css/style.css">
+      <link rel="icon" type="image/png" href="static/images/favicon.svg">
+   </head>
+   <body>
+      <div id="header-placeholder"></div>
+      <main>
+         <section class="page-hero" style="background-image: url('static/images/Launchday.JPG');">
+            <div class="page-hero-overlay">
+               <div class="container">
+                  <h1>Nuestros Sponsors</h1>
+                  <p>El combustible detrás de nuestra misión. Agradecemos a las organizaciones que creen en nuestro proyecto.</p>
+               </div>
+            </div>
+         </section>
+         <section id="sponsors-grid-section" class="container">
+            <div id="sponsors-grid" class="sponsors-grid">
+               <!-- El grid de sponsors se generará aquí por JavaScript -->
+            </div>
+         </section>
+      </main>
+      <div id="footer-placeholder"></div>
+      <div class="custom-cursor"></div>
+      <canvas id="particle-trail-canvas"></canvas>
+      <div class="star-container"></div>
+      <!-- ¡Estrellas incluidas! -->
+      <!-- Scripts -->
+      <!-- <script src="static/js/sponsors-data.js"></script> <!-- Carga los datos PRIMERO -->
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+             const grid = document.getElementById('sponsors-grid');
+             
+             fetch('http://127.0.0.1:5001/api/sponsors')
+                 .then(response => response.json())
+                 .then(sponsorsData => {
+                     sponsorsData.forEach(sponsor => {
+                         const sponsorCard = document.createElement('a');
+                         sponsorCard.href = `sponsor-detail.html?id=${sponsor.id}`;
+                         sponsorCard.className = 'sponsor-card';
+         
+                         sponsorCard.innerHTML = `
+                             <div class="card-image" style="background-image: url('${sponsor.image}');"></div>
+                             <div class="card-content">
+                                 <img src="${sponsor.logo}" alt="Logo de ${sponsor.name}" class="card-logo">
+                                 <h3>${sponsor.name}</h3>
+                             </div>
+                         `;
+                         grid.appendChild(sponsorCard);
+                     });
+                 })
+                 .catch(error => console.error('Error al cargar los datos de sponsors:', error));
+         });
+      </script>
+      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+      <!-- <script src="static/js/team-data.js"></script> -->
+      <script src="static/js/main.js"></script>
+   </body>
+</html>

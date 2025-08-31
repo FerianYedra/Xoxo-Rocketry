@@ -1,0 +1,35 @@
+<header>
+   <nav class="container">
+      <!-- Actualiza la ruta a tu nuevo logo -->
+      <a href="/" class="logo">
+      <img src="static/images/XoxoLogo.svg" alt="Logo Ilihuícatl Xoxoauhco">
+      </a>
+      <!-- Contenedor del menú para controlarlo con JS -->
+      <div class="nav-menu" id="nav-menu">
+      <ul class="nav-links">
+         <li><a href="/">Inicio</a></li>
+         <li><a href="/nosotros">Acerca de Nosotros</a></li>
+         <li class="dropdown">
+            <a href="/concurso-2024">Nuestra Historia</a> <!-- Este enlace puede o no llevar a una página -->
+            <ul class="dropdown-menu">
+               <li><a href="/concurso-2024">Concurso 2024</a></li>
+               <!-- Puedes añadir más aquí en el futuro, ej: <li><a href="#">Concurso 2025</a></li> -->
+            </ul>
+         </li>
+         <li class="dropdown">
+            <a href="/integrantes">Nuestros Integrantes</a>
+            <ul class="dropdown-menu" id="integrantes-dropdown">
+               <!-- Los integrantes se generarán aquí por JavaScript -->
+            </ul>
+         </li>
+         <li><a href="/sponsors">Nuestros Sponsors</a></li>
+         <li><a href="/dashboard">Concurso 2025</a></li>
+      </ul>
+      <!-- Botón de Hamburguesa para Móvil -->
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menú">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+      </button>
+   </nav>
+</header>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Noticia de Inicio - Panel de Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-forms.css') }}">
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <div class="container">
+            <h1>Editar Noticia de Inicio</h1>
+            <div>
+                <a href="{{ url_for('admin_panel') }}" style="margin-right: 1rem;">Volver al Panel</a>
+                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <div class="form-container">
+            <h2>Actualizar la sección "Informe de Resultados"</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% set text_color = 'var(--accent-color)' if category == 'success' else 'var(--danger-color)' %}
+                        <p style="color: {{ text_color }}; text-align: center; margin-bottom: 1rem;">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('edit_news') }}">
+                <div class="form-group">
+                    <label for="title">Título de la Noticia</label>
+                    <input type="text" id="title" name="title" value="{{ news.get('title', '') }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Texto de Fecha (ej. "Actualizado el...")</label>
+                    <input type="text" id="date" name="date" value="{{ news.get('date', '') }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Contenido / Descripción</label>
+                    <textarea id="content" name="content" required>{{ news.get('content', '') or '' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="link">Enlace del Botón (URL)</label>
+                    <input type="url" id="link" name="link" value="{{ news.get('link', '#') }}">
+                </div>
+                <div class="form-group">
+                    <label for="image">Imagen de la Noticia (Opcional)</label>
+                    <input type="file" id="image" name="image" accept="image/png, image/jpeg">
+                    {% if news.image %}<small>Archivo actual: <strong>{{ news.image }}</strong></small>{% endif %}
+                </div>
+                <div class="button-group">
+                    <a href="{{ url_for('admin_panel') }}" class="cta-button secondary">Cancelar</a>
+                    <button type="submit" class="cta-button">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

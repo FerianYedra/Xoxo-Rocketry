@@ -1,0 +1,106 @@
+<!-- bio.html -->
+<!DOCTYPE html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- El título se cambiará con JS -->
+      <title>Perfil de Integrante - XOXO Web</title>
+      <link rel="stylesheet" href="static/css/style.css">
+      <link rel="icon" type="image/png" href="static/images/favicon.svg">
+   </head>
+   <body>
+      <div class="star-container"></div>
+      <div id="header-placeholder"></div>
+      <main class="dossier-layout">
+         <!-- Columna Izquierda: Foto Fija con Parallax -->
+         <div class="dossier-photo-panel">
+            <div class="photo-overlay"></div>
+            <img id="member-photo" src="" alt="Foto de perfil">
+            <div class="photo-title container">
+               <h1 id="member-name-photo">Cargando...</h1>
+               <h3 id="member-role-photo" class="accent-text"></h3>
+            </div>
+         </div>
+         <!-- Columna Derecha: Contenido Desplazable -->
+         <div class="dossier-content-panel">
+            <div class="container">
+               <section class="bio-section">
+                  <h2>Biografía</h2>
+                  <p id="member-bio"></p>
+               </section>
+               <section class="bio-section">
+                  <h2>Áreas de Enfoque</h2>
+                  <div id="member-focus" class="focus-tags">
+                     <!-- Las etiquetas de enfoque se generarán aquí -->
+                  </div>
+               </section>
+               <section class="bio-section">
+                  <h2>Conectar</h2>
+                  <div id="member-links" class="social-links-bio">
+                     <!-- Los enlaces se generarán aquí -->
+                  </div>
+               </section>
+            </div>
+         </div>
+      </main>
+      <div id="footer-placeholder"></div>
+      <div class="custom-cursor"></div>
+      <canvas id="particle-trail-canvas"></canvas>
+      <!-- Scripts -->
+      <!-- <script src="static/js/team-data.js"></script> -->
+      <script>
+         // Script para rellenar la plantilla
+         document.addEventListener("DOMContentLoaded", function() {
+             const urlParams = new URLSearchParams(window.location.search);
+             const memberId = parseInt(urlParams.get('id'));
+         
+             fetch('http://127.0.0.1:5001/api/team')
+                 .then(response => response.json())
+                 .then(teamData => {
+                     const member = teamData.find(m => m.id === memberId);
+         
+                     if (member) {
+                         document.title = `${member.name} - Perfil de Integrante`;
+                         document.getElementById('member-name-photo').textContent = member.name;
+                         document.getElementById('member-role-photo').textContent = member.role;
+                         document.getElementById('member-bio').textContent = member.bio;
+                         
+                         const memberPhoto = document.getElementById('member-photo');
+                         memberPhoto.src = member.image;
+                         memberPhoto.alt = `Foto de ${member.name}`;
+         
+                         const focusContainer = document.getElementById('member-focus');
+                         if (member.focus_areas && Array.isArray(member.focus_areas)) {
+                             member.focus_areas.forEach(area => {
+                                 focusContainer.innerHTML += `<span class="focus-tag">${area}</span>`;
+                             });
+                         }
+         
+                         const linksContainer = document.getElementById('member-links');
+                         if (member.link_linkedin) {
+                             linksContainer.innerHTML += `<a href="${member.link_linkedin}" target="_blank" class="bio-link-button">LinkedIn</a>`;
+                         }
+                         if (member.link_github) {
+                             linksContainer.innerHTML += `<a href="${member.link_github}" target="_blank" class="bio-link-button">GitHub</a>`;
+                         }
+                         if (member.link_portfolio) {
+                             linksContainer.innerHTML += `<a href="${member.link_portfolio}" target="_blank" class="bio-link-button">Portafolio</a>`;
+                         }
+         
+                         window.addEventListener('scroll', () => {
+                             const scrollValue = window.scrollY;
+                             memberPhoto.style.transform = `translateY(${scrollValue * 0.3}px)`;
+                         });
+         
+                     } else {
+                         document.getElementById('member-name-photo').textContent = "Integrante no encontrado";
+                     }
+                 })
+                 .catch(error => console.error('Error al cargar los datos del miembro:', error));
+         });
+      </script>
+      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+      <script src="static/js/main.js"></script>
+   </body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Dashboard de Misión - XOXO Web</title>
+      <link rel="stylesheet" href="static/css/style.css">
+      <link rel="icon" type="image/png" href="static/images/favicon.svg">
+      <!-- Leaflet CSS para el mapa -->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+   </head>
+   <body>
+      <div id="header-placeholder"></div>
+      <main id="dashboard-main">
+         <div class="container">
+            <div class="dashboard-header">
+               <h1>Dashboard de Misión: <span id="status-text" class="status-standby">STANDBY</span></h1>
+               <div class="view-tabs">
+                  <button id="tab-dashboard" class="tab-button active">Telemetría</button>
+                  <button id="tab-3d" class="tab-button">Visor Interactivo</button>
+               </div>
+            </div>
+            <!-- Vista de Telemetría -->
+            <div id="view-dashboard" class="dashboard-view active">
+               <div class="dashboard-grid">
+                  <!-- Fila 1: KPIs Principales -->
+                  <div class="widget" data-tilt>
+                     <span class="widget-label">Altitud</span>
+                     <h2 id="altitude">0.00 <span class="unit">m</span></h2>
+                  </div>
+                  <div class="widget" data-tilt>
+                     <span class="widget-label">Aceleración</span>
+                     <h2 id="acceleration">0.00 <span class="unit">m/s²</span></h2>
+                  </div>
+                  <div class="widget" data-tilt>
+                     <span class="widget-label">Presión</span>
+                     <h2 id="pressure">1013.25 <span class="unit">hPa</span></h2>
+                  </div>
+                  <div class="widget" data-tilt>
+                     <span class="widget-label">Temperatura</span>
+                     <h2 id="temperature">25.0 <span class="unit">°C</span></h2>
+                  </div>
+                  <!-- Fila 2: Visualización -->
+                  <div class="widget live-renderer-widget">
+                     <span class="widget-label">Orientación en Vivo</span>
+                     <div id="live-renderer-container"></div>
+                  </div>
+                  <div class="widget map-widget">
+                     <span class="widget-label">Posicionamiento GPS</span>
+                     <div id="map"></div>
+                  </div>
+                  <div class="widget camera-widget">
+                     <span class="widget-label">Cámara a Bordo</span>
+                     <div id="camera-feed"><span>NO SIGNAL</span></div>
+                  </div>
+                  <!-- Fila 3: Controles y Gráficos -->
+                  <div class="widget controls-widget">
+                     <span class="widget-label">Controles de Simulación</span>
+                     <div class="control-buttons">
+                        <button id="start-sim-btn" class="cta-button">Iniciar Simulación</button>
+                        <button id="stop-sim-btn" class="cta-button secondary">Detener Simulación</button>
+                     </div>
+                  </div>
+                  <div class="widget graph-widget">
+                     <div class="graph-header">
+                        <span class="widget-label">Gráfico en Tiempo Real</span>
+                        <div class="graph-selectors">
+                           <input type="radio" name="graph-param" value="altitude" id="sel-alt" checked>
+                           <label for="sel-alt">Alt</label>
+                           <input type="radio" name="graph-param" value="acceleration" id="sel-accel">
+                           <label for="sel-accel">Accel</label>
+                           <input type="radio" name="graph-param" value="pressure" id="sel-pres">
+                           <label for="sel-pres">Pres</label>
+                           <input type="radio" name="graph-param" value="temperature" id="sel-temp">
+                           <label for="sel-temp">Temp</label>
+                        </div>
+                     </div>
+                     <div class="canvas-container">
+                        <canvas id="graph-canvas"></canvas>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- Vista del Visor 3D Interactivo -->
+            <div id="view-3d" class="dashboard-view">
+               <div id="interactive-renderer-container"></div>
+            </div>
+         </div>
+      </main>
+      <div id="footer-placeholder"></div>
+      <div class="custom-cursor"></div>
+      <canvas id="particle-trail-canvas"></canvas>
+      <div class="star-container"></div>
+      <!-- Scripts de Librerías -->
+    <script src="static/js/libs/vanilla-tilt.min.js"></script>
+    <!-- <script src="static/js/team-data.js"></script> -->
+    <script src="static/js/main.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Import Map para Three.js (se queda igual) -->
+    <script type="importmap">{"imports": {"three": "https://unpkg.com/three@0.158.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"}}</script>
+    
+    <!-- Enlace a tu script del dashboard (¡CON type="module"!) -->
+    <script type="module" src="static/js/dashboard.js"></script>
+   </body>
+</html>

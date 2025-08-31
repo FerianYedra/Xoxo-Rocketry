@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log de Cambios - Panel de Administración</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Reutilizamos los mismos estilos de la página de gestión de sponsors/integrantes -->
+    <style>
+        .admin-header { background-color: var(--secondary-color); padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+        .admin-header .container { display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 1.5rem; color: white; }
+        .admin-header a { color: var(--accent-color); text-decoration: none; }
+        .content-container { max-width: 1200px; margin: 4rem auto; }
+        .page-title { margin-bottom: 2rem; }
+        .page-title h2 { color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--accent-color); }
+    </style>
+</head>
+<body class="admin-page">
+    <header class="admin-header">
+        <div class="container">
+            <h1>Registro de Cambios del Sistema</h1>
+            <div>
+                <a href="{{ url_for('admin_panel') }}" style="margin-right: 1rem;">Volver al Panel</a>
+                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container content-container">
+        <div class="page-title">
+            <h2>Actividad Reciente</h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha y Hora</th>
+                    <th>Usuario</th>
+                    <th>Acción Realizada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Jinja ordenará los logs del más reciente al más antiguo -->
+                {% for log in logs | reverse %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.user }}</td>
+                    <td>{{ log.action }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>
