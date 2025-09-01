@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         teamData.forEach(member => {
                             const listItem = document.createElement('li');
                             // Usamos url_for para generar la URL correcta desde la plantilla del header
-                            listItem.innerHTML = `<a href="/bio.html?id=${member.id}">${member.name}</a>`;
+                            listItem.innerHTML = `<a href="/bio?id=${member.id}">${member.name}</a>`;
                             integrantesDropdown.appendChild(listItem);
                         });
                     }

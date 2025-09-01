@@ -55,7 +55,7 @@
              const urlParams = new URLSearchParams(window.location.search);
              const memberId = parseInt(urlParams.get('id'));
          
-             fetch('http://127.0.0.1:5001/api/team')
+             fetch('/api/team')
                  .then(response => response.json())
                  .then(teamData => {
                      const member = teamData.find(m => m.id === memberId);

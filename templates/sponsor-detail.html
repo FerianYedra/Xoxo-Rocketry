@@ -48,7 +48,7 @@
             const sponsorId = parseInt(urlParams.get('id'));
 
             // Hacemos el fetch a la API de sponsors
-            fetch('http://127.0.0.1:5001/api/sponsors')
+            fetch('/api/sponsors')
                 .then(response => response.json())
                 .then(sponsorsData => {
                     const sponsor = sponsorsData.find(s => s.id === sponsorId);
