@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // --- Conexión SSE y Lógica Principal del Dashboard ---
-    const eventSource = new EventSource("http://127.0.0.1:5001/api/telemetry-stream");
+    const eventSource = new EventSource("/api/telemetry-stream");
     eventSource.onmessage = function(event) {
         const data = JSON.parse(event.data);
 
@@ -207,9 +207,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- Event Listeners para Controles ---
     document.getElementById('start-sim-btn').addEventListener('click', () => {
         resetDashboardUI();
-        fetch('http://127.0.0.1:5001/api/start-simulation', { method: 'POST' });
+        fetch('/api/start-simulation', { method: 'POST' });
     });
-    document.getElementById('stop-sim-btn').addEventListener('click', () => fetch('http://127.0.0.1:5001/api/stop-simulation', { method: 'POST' }));
+    document.getElementById('stop-sim-btn').addEventListener('click', () => fetch('/api/stop-simulation', { method: 'POST' }));
 
     document.querySelectorAll('input[name="graph-param"]').forEach(radio => {
         radio.addEventListener('change', (e) => {

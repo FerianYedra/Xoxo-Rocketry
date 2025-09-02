@@ -35,7 +35,7 @@
                 </div>
                 <div class="form-group">
                     <label for="focus_areas">Áreas de Enfoque</label>
-                    <input type="text" id="focus_areas" name="focus_areas" value="{{ (member.get('focus_areas', []) | join(';')) if member.get('focus_areas') is iterable else member.get('focus_areas', '') }}">
+                    <input type="text" id="focus_areas" name="focus_areas" value="{{ member.get('focus_areas', '') or '' }}">
                     <small>Separa cada área con un punto y coma (;).</small>
                 </div>
                 <div class="form-group">
