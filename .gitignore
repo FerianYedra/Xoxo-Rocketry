@@ -9,6 +9,9 @@ manage_users.py
 
 # Archivos de Datos Temporales o Locales
 database/temp.csv
+static/js/sponsors-data-UNUSED.js
+static/js/team-data-UNUSED.js
+templates/index.html.back
 
 # Archivos de Sistema
 .DS_Store
