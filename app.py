@@ -85,6 +85,44 @@ def log_change(user_name, action):
             writer.writeheader()
         writer.writerow(log_entry)
 
+def log_to_csv(data_packet):
+    """Guarda un paquete de datos en un archivo CSV basado en el número de vuelo."""
+    try:
+        # Usa el flight_number del JSON, o un nombre por defecto si no viene
+        flight_number = data_packet.get("flight_number", "unknown_flight")
+        filename = f"vuelo_{flight_number}.csv"
+        filepath = os.path.join(LOG_DIRECTORY, filename)
+
+        os.makedirs(LOG_DIRECTORY, exist_ok=True)
+
+        fieldnames = ['timestamp', 'status', 'altitude', 'temperature', 'acceleration', 
+                      'pressure', 'roll', 'pitch', 'yaw', 'latitude', 'longitude']
+        
+        row_data = {
+            'timestamp': datetime.now().isoformat(),
+            'status': data_packet.get('status'),
+            'altitude': data_packet.get('altitude'),
+            'temperature': data_packet.get('temperature'),
+            'acceleration': data_packet.get('acceleration'),
+            'pressure': data_packet.get('pressure'),
+            'roll': data_packet.get('orientation', {}).get('roll', 0),
+            'pitch': data_packet.get('orientation', {}).get('pitch', 0),
+            'yaw': data_packet.get('orientation', {}).get('yaw', 0),
+            'latitude': data_packet.get('latitude'),
+            'longitude': data_packet.get('longitude')
+        }
+
+        file_exists = os.path.isfile(filepath)
+        with open(filepath, 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow(row_data)
+
+    except Exception as e:
+        # Es una buena práctica registrar errores en el log del servidor
+        print(f"Error al guardar en CSV: {e}")
+
 # =======================================================
 # 3. RUTAS PARA SERVIR PÁGINAS Y ARCHIVOS ESTÁTICOS
 # =======================================================
@@ -643,12 +681,31 @@ def telemetry_stream():
 
 @app.route('/api/ingest', methods=['POST'])
 def ingest_telemetry():
+    """
+    Recibe datos de telemetría de una fuente externa (ej. Arduino),
+    actualiza el estado en vivo y guarda los datos en un CSV.
+    """
     global telemetry_state
+    
     data = request.get_json()
-    if not data or data.get("api_key") != SECRET_API_KEY:
-        return jsonify({"error": "Clave de API inválida o no hay datos"}), 403
-    # ... (actualizar telemetry_state y log_to_csv)
-    return jsonify({"message": "Datos recibidos"}), 200
+
+    if not data:
+        return jsonify({"error": "No se recibió payload JSON"}), 400
+    if data.get("api_key") != SECRET_API_KEY:
+        return jsonify({"error": "Clave de API inválida"}), 403
+
+    telemetry_state["status"] = data.get("status", telemetry_state["status"])
+    telemetry_state["altitude"] = data.get("altitude", telemetry_state["altitude"])
+    telemetry_state["temperature"] = data.get("temperature", telemetry_state["temperature"])
+    telemetry_state["acceleration"] = data.get("acceleration", telemetry_state["acceleration"])
+    telemetry_state["pressure"] = data.get("pressure", telemetry_state["pressure"])
+    telemetry_state["orientation"] = data.get("orientation", telemetry_state["orientation"])
+    telemetry_state["latitude"] = data.get("latitude", telemetry_state["latitude"])
+    telemetry_state["longitude"] = data.get("longitude", telemetry_state["longitude"])
+    
+    log_to_csv(data)
+
+    return jsonify({"message": "Datos recibidos y procesados correctamente"}), 200
 
 @app.route('/api/start-simulation', methods=['POST'])
 def start_simulation():

@@ -1,80 +1,86 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // ===============================================
-    // --- CÓDIGO PARA AÑADIR EL HEADER ---
-    // ===============================================
-    fetch('/static/includes/header.html')
+
+    // --- CARGA Y ACTIVACIÓN DEL HEADER Y FOOTER ---
+    fetch('/static/includes/header.html') // Asumiendo que header.html está en /static/
         .then(response => response.text())
         .then(data => {
-            document.getElementById('header-placeholder').innerHTML = data;
+            const headerPlaceholder = document.getElementById('header-placeholder');
+            if (headerPlaceholder) {
+                headerPlaceholder.innerHTML = data;
+            }
 
-            // --- AHORA QUE EL HEADER ESTÁ CARGADO, PODEMOS EJECUTAR EL CÓDIGO ---
-
-            // 1. CÓDIGO PARA EL MENÚ MÓVIL (HAMBURGUESA)
+            // AHORA que el HTML del header está garantizado que existe, activamos sus componentes
+            
+            // 1. LÓGICA ÚNICA Y CORRECTA PARA EL MENÚ MÓVIL (HAMBURGUESA)
             const menuToggle = document.getElementById('mobile-menu-toggle');
             const navMenu = document.getElementById('nav-menu');
-
             if (menuToggle && navMenu) {
                 menuToggle.addEventListener('click', () => {
+                    // Alternamos la clase 'active' en el botón y en el menú
                     menuToggle.classList.toggle('active');
                     navMenu.classList.toggle('active');
+                    
+                    // Bloquea/desbloquea el scroll del body cuando el menú está abierto
+                    document.body.classList.toggle('no-scroll');
                 });
             }
-            
-            // 2. CÓDIGO PARA POBLAR EL DROPDOWN DE INTEGRANTES
-            const integrantesDropdown = document.getElementById('integrantes-dropdown');
-            if (integrantesDropdown && integrantesDropdown.children.length === 0){
-                fetch('/api/team')
-                .then(response => response.json())
-                .then(teamData => {
-                    // Verificamos de nuevo por si acaso el fetch fue muy lento
-                    if (integrantesDropdown.children.length === 0) {
-                        teamData.forEach(member => {
-                            const listItem = document.createElement('li');
-                            // Usamos url_for para generar la URL correcta desde la plantilla del header
-                            listItem.innerHTML = `<a href="/bio?id=${member.id}">${member.name}</a>`;
-                            integrantesDropdown.appendChild(listItem);
-                        });
-                    }
-                })
-            }
-            });
 
-    // ===============================================
-    // --- CÓDIGO PARA AÑAID RL FOOTER ---
-    // ===============================================
-    fetch('/static/includes/footer.html')
+            // 2. LÓGICA PARA POBLAR EL DROPDOWN DE INTEGRANTES
+            const integrantesDropdown = document.getElementById('integrantes-dropdown');
+            if (integrantesDropdown && integrantesDropdown.children.length === 0) {
+                fetch('/api/team')
+                    .then(response => response.json())
+                    .then(teamData => {
+                        if (integrantesDropdown.children.length === 0) {
+                            teamData.forEach(member => {
+                                const listItem = document.createElement('li');
+                                listItem.innerHTML = `<a href="/bio?id=${member.id}">${member.name}</a>`;
+                                integrantesDropdown.appendChild(listItem);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error al poblar dropdown de integrantes:', error));
+            }
+        })
+        .catch(error => console.error('Error al cargar el header:', error));
+
+    fetch('/static/includes/footer.html') // Asumiendo que footer.html está en /static/
         .then(response => response.text())
         .then(data => {
-            document.getElementById('footer-placeholder').innerHTML = data;
-        });
+            const footerPlaceholder = document.getElementById('footer-placeholder');
+            if (footerPlaceholder) {
+                footerPlaceholder.innerHTML = data;
+            }
+        })
+        .catch(error => console.error('Error al cargar el footer:', error));
+
+
+    // --- TEMPORIZADOR DE LANZAMIENTO (SOLO SI ESTÁ EN LA PÁGINA) ---
+    const daysEl = document.getElementById("days");
+    if (daysEl) { // Este 'if' previene errores en otras páginas
+        const countdownDate = new Date("Oct 23, 2025 15:00:00").getTime();
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+            const hoursEl = document.getElementById("hours");
+            const minutesEl = document.getElementById("minutes");
+            const secondsEl = document.getElementById("seconds");
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "<h2 class='section-title'>¡Hemos despegado!</h2>";
+                return;
+            }
+            
+            daysEl.innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+            hoursEl.innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+            minutesEl.innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            secondsEl.innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+        }, 1000);
+    }
 
     // ===============================================
-    // --- TEMPORIZADOR DE LANZAMIENTO ---
-    // ===============================================
-    const countdownDate = new Date("Oct 23, 2025 15:00:00").getTime();
-
-    const x = setInterval(function() {
-        const now = new Date().getTime();
-        const distance = countdownDate - now;
-
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        document.getElementById("days").innerText = days;
-        document.getElementById("hours").innerText = hours;
-        document.getElementById("minutes").innerText = minutes;
-        document.getElementById("seconds").innerText = seconds;
-
-        if (distance < 0) {
-            clearInterval(x);
-            document.getElementById("countdown").innerHTML = "<h2 class='section-title'>¡Hemos despegado!</h2>";
-        }
-    }, 1000);
-
-    // ===============================================
-    // --- CÓDIGO PARA LAS ESTRELLAS DE FONTO ---
+    // --- CÓDIGO PARA LAS ESTRELLAS DE FONDO ---
     // ===============================================
     const starContainer = document.querySelector('.star-container');
     if (starContainer) {
@@ -98,21 +104,6 @@ document.addEventListener("DOMContentLoaded", function() {
             starContainer.appendChild(star);
         }
     }
-
-    // ===============================================
-    // --- CÓDIGO PARA EL MENÚ MÓVIL (HAMBURGUESA) ---
-    // ===============================================
-    setTimeout(() => {
-        const menuToggle = document.getElementById('mobile-menu-toggle');
-        const navMenu = document.getElementById('nav-menu');
-
-        if (menuToggle && navMenu) {
-            menuToggle.addEventListener('click', () => {
-                menuToggle.classList.toggle('active');
-                navMenu.classList.toggle('active');
-            });
-        }
-    }, 100);
 
     // ===============================================
     // --- LÓGICA PARA EL CURSOR INTERACTIVO ORBITAL (v2) ---
@@ -146,21 +137,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 2. ANIMACIÓN DEL DELTA Y LAS PARTÍCULAS
         function animate() {
-            // === CAMBIO 1: AUMENTAR RESPONSIVIDAD ===
-            // Reducimos el divisor de 8 a 4. Un número más bajo = menos lag.
-            // ¡Puedes probar con 3 o 5 para encontrar tu punto ideal!
             posX += (mouseX - posX) / 4;
             posY += (mouseY - posY) / 4;
             cursor.style.transform = `translate3d(${posX - (cursor.offsetWidth / 2)}px, ${posY - (cursor.offsetHeight / 2)}px, 0)`;
 
-            // Limpiar el lienzo
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // === CAMBIO 2: SINCRONIZAR PARTÍCULAS ===
-            // Solo generamos partículas si el estado es "moviendo"
             if (isMoving) {
                 particles.push({
-                    // Las generamos desde la posición del DELTA (posX, posY), no del ratón
                     x: posX, 
                     y: posY,
                     size: Math.random() * 1.5 + 1,
@@ -170,7 +154,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
             
-            // Dibujar y actualizar todas las partículas (esto no cambia)
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
                 p.x += p.vx;
@@ -178,8 +161,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 p.life -= 0.04;
 
                 if (p.life > 0) {
-                    ctx.fillStyle = `rgba(255, 2555, 255, ${p.life})`;
-                    //ctx.fillStyle = `rgba(255, 165, 0, ${p.life})`; Naranja
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.life})`;
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fill();
@@ -192,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         animate();
 
-        // Las secciones 3 (Hover) y 4 (Click) se quedan exactamente igual
         const interactiveElements = document.querySelectorAll('a, button, .logo-slide');
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));

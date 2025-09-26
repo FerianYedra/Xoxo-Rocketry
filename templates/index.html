@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XOXO Web 💋 🚀 💫</title>
     <!-- Usamos url_for para que Flask encuentre el CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" type="image/png" href="static/images/favicon.svg">
 </head>
 <body>
     <div class="star-container"></div>
@@ -77,10 +77,15 @@
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/IniatLogo.png') }}" alt="Logo InIAT"></div>
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/IberoLogo.png') }}" alt="Logo Ibero"></div>
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/AlasLogo.png') }}" alt="Logo ALAS"></div>
+                  <div class="logo-slide"><img src="{{ url_for('static', filename='images/BWT Landscape Alt.svg') }}" alt="Logo BWT"></div>
+                  <div class="logo-slide"><img src="{{ url_for('static', filename='images/Ximple.jpeg') }}" alt="Logo Ximple"></div>
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/DeiiLogo.png') }}" alt="Logo DEII"></div>
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/IniatLogo.png') }}" alt="Logo InIAT"></div>
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/IberoLogo.png') }}" alt="Logo Ibero"></div>
                   <div class="logo-slide"><img src="{{ url_for('static', filename='images/AlasLogo.png') }}" alt="Logo ALAS"></div>
+                  <div class="logo-slide"><img src="{{ url_for('static', filename='images/BWT Landscape Alt.svg') }}" alt="Logo BWT"></div>
+                  <div class="logo-slide"><img src="{{ url_for('static', filename='images/Ximple.jpeg') }}" alt="Logo Ximple"></div>
+                  
                </div>
             </div>
         </section>
@@ -100,7 +105,7 @@
                   <p class="news-meta">{{ news.date }}</p>
                   <h3>{{ news.title }}</h3>
                   <p>{{ news.content }}</p>
-                  <a href="{{ news.link }}" class="read-more-btn">Leer Más</a>
+                  <a href="{{ news.link }}" class="read-more-btn" target="_blank">Leer Más</a>
                </div>
             </div>
             <div class="news-archive">
@@ -114,9 +119,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#">
-                            <span>Análisis de telemetría del Vuelo de Prueba 1</span>
-                            <small>Agosto 2024</small>
+                        <a href="{{ url_for('static', filename='reports/Reporte Diseño Preliminar XOXO 2025.pdf') }}" target="_blank">
+                            <span>Reporte Preliminar 2025</span>
+                            <small>Septiembre 2024</small>
                         </a>
                     </li>
                 </ul>

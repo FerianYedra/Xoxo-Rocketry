@@ -22,6 +22,17 @@ body {
     background-color: var(--primary-color);
     color: var(--text-color);
     line-height: 1.6;
+    overflow-x: hidden;
+}
+
+body.no-scroll {
+    overflow: hidden;
+
+}
+
+.navigation-wrapper {
+    display: flex;
+    align-items: center;
 }
 
 /* =============== EFECTO DE ESTRELLAS =============== */
@@ -642,22 +653,24 @@ footer {
     padding: 4rem 0;
 }
 
+
 .logo-scroller {
     overflow: hidden;
     padding: 2rem 0;
-    /* Degradado en los bordes para un efecto de desvanecimiento */
     -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
     mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
 }
 
 .logo-track {
     display: flex;
-    width: calc(250px * 8); /* Ancho del slide * número de slides (originales+duplicados) */
+    /* ELIMINAMOS el width fijo. Flexbox se encargará del ancho total. */
+    /* width: calc(250px * 8); <-- Esta línea se va */
     animation: scroll-logos 30s linear infinite;
 }
 
 .logo-slide {
-    width: 250px;
+    flex-shrink: 0; /* ¡MUY IMPORTANTE! Evita que los logos se encojan. */
+    width: 250px;   /* Mantenemos un ancho fijo para cada "cajón" de logo. */
     height: 80px;
     display: flex;
     align-items: center;
@@ -666,9 +679,11 @@ footer {
 }
 
 .logo-slide img {
-    max-width: 100%;
-    max-height: 100%;
-    filter: grayscale(100%) brightness(1.5); /* Monocromático y más claro */
+    /* CAMBIO CLAVE: Fijamos la altura para unificar el tamaño visual */
+    height: 60px; /* Ajusta este valor según necesites. 60px es un buen punto de partida dentro de un contenedor de 80px. */
+    width: auto;  /* El ancho se ajustará automáticamente para mantener la proporción. */
+    max-width: 100%; /* Como seguridad, para que un logo extremadamente ancho no se desborde. */
+    object-fit: contain; /* Asegura que la imagen siempre se vea completa y sin deformarse. */
     transition: filter 0.3s ease;
 }
 
@@ -678,7 +693,12 @@ footer {
 
 @keyframes scroll-logos {
     from { transform: translateX(0); }
-    to { transform: translateX(calc(-250px * 4)); } /* Desplaza la longitud de la serie original */
+    /* ¡DEBES ACTUALIZAR ESTE CÁLCULO! */
+    /* Fórmula: calc(-[Ancho del slide] * [NÚMERO DE LOGOS ORIGINALES]) */
+    /* Ejemplo si ahora tienes 6 logos originales (y 6 duplicados): */
+    to { transform: translateX(calc(-250px * 6)); }
+    
+    /* Si tenías 4 logos originales, el valor original de -250px * 4 estaba bien */
 }
 
 /* ======================================================= */
@@ -969,7 +989,7 @@ footer {
 
 .partner-logos img {
     height: 40px;
-    filter: grayscale(100%) opacity(0.7);
+    /*filter: grayscale(100%) opacity(0.7);*/
     transition: filter 0.3s ease;
 }
 
@@ -1771,13 +1791,33 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
 /* Visor 3D Interactivo */
 #interactive-renderer-container {
+    position: relative;
     width: 100%;
-    height: 0; /* Por defecto no tiene altura */
+    height: 75vh; /* Puede que esta línea ya la tengas */
     border-radius: 12px;
     overflow: hidden;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
 }
 #view-3d.active #interactive-renderer-container {
     height: 75vh; /* Solo le damos altura cuando la vista 3D está activa */
+}
+
+.viewer-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--secondary-color);
+    border-radius: 0 0 12px 12px;
+    margin-top: -5px; /* Pequeño ajuste para que se pegue al visor */
+}
+.viewer-controls label {
+    font-weight: bold;
+}
+.viewer-controls input[type="range"] {
+    width: 300px;
 }
 
 /* Responsividad */
@@ -1824,3 +1864,146 @@ canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     color: var(--primary-color);
     font-weight: bold;
 }
+
+@media (max-width: 992px) {
+    /* Menú de Navegación */
+    .nav-menu { position: fixed; top: 0; left: 100%; width: 100%; height: 100vh; background-color: var(--primary-color); display: flex; justify-content: center; align-items: center; transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
+    .nav-menu.active { left: 0; }
+    .nav-links { flex-direction: column; text-align: center; gap: 1rem; }
+    .nav-links a { font-size: 2rem; }
+    .mobile-menu-toggle { display: block; }
+    .mobile-menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+    .mobile-menu-toggle.active .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mobile-menu-toggle.active .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .dropdown > a::after { display: none; }
+    .dropdown-menu { position: static; opacity: 1; transform: none; pointer-events: auto; box-shadow: none; background: none; padding-left: 1.5rem; min-width: auto; }
+    .dropdown-menu a { font-size: 1.5rem; padding: 0.5rem 0; }
+    .dropdown-menu a:hover { background: none; color: var(--accent-color) !important; }
+
+    /* Hero Section */
+    .hero-content-area { flex-direction: column; }
+    .hero-text { padding-right: 0; text-align: center; }
+    .hero-image { clip-path: none; width: 100%; max-width: 500px; height: 50vh; }
+
+    .image-filmstrip {
+        margin-top: 60px;
+        height: 20em;
+    }
+
+    .timer{
+        flex-wrap: wrap;
+    }
+
+    .timer-unit{
+        padding: 12px;
+    }
+
+    .timer-value{
+        font-size: 15px;
+    }
+    .timer-label {
+        font-size: 15px;
+    }
+
+    .featured-news-image{
+        flex-wrap: wrap;
+        height: 30rem;
+        width: 30em;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .featured-news-content h3, p{
+        text-align: center;
+    }
+
+    .read-more-btn {
+        margin-left: 40%;
+        margin-right: 20%;
+    }
+
+    /* Dossier (Bio) */
+    .dossier-layout { grid-template-columns: 1fr; }
+    .dossier-photo-panel { position: relative; top: auto; height: 60vh; }
+
+    /* Dashboard */
+    .dashboard-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto auto auto auto; }
+    .live-renderer-widget, .camera-widget { grid-column: span 1; }
+    .map-widget, .graph-widget { grid-column: span 2; }
+    .controls-widget { grid-column: span 2; }
+
+    /* Footer */
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* --- MÓVILES (hasta 768px) --- */
+@media (max-width: 768px) {
+    .container { padding: 0 1rem; }
+    h1, .section-title, .page-hero h1 { font-size: 2rem !important; } /* Reducir tamaños de títulos */
+
+    /* Hero Section */
+    #hero { min-height: auto; }
+    .hero-text p { font-size: 1rem; }
+
+    .image-filmstrip {
+        margin-top: 60px;
+        height: 20em;
+    }
+
+    .timer{
+        flex-wrap: wrap;
+    }
+
+    .timer-unit{
+        padding: 12px;
+    }
+
+    .timer-value{
+        font-size: 15px;
+    }
+    .timer-label {
+        font-size: 15px;
+    }
+
+    .featured-news-image{
+        flex-wrap: wrap;
+        height: 30rem;
+        width: 30em;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .featured-news-content h3, p{
+        text-align: center;
+    }
+
+    .read-more-btn {
+        margin-left: 40%;
+        margin-right: 20%;
+    }
+
+    /* Secciones Generales */
+    .mission-status-panel, .featured-news, .decoder-layout, .sponsor-detail-layout, .emblems-grid { grid-template-columns: 1fr; }
+    .featured-news-image { order: -1; }
+
+    /* Timeline */
+    .timeline::after { left: 20px; }
+    .timeline-item { width: 100%; padding-left: 60px; padding-right: 15px; left: 0 !important; text-align: left !important; }
+    .timeline-dot { left: 12.5px !important; }
+
+    /* Dashboard */
+    .dashboard-header { flex-direction: column; text-align: center; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .live-renderer-widget, .map-widget, .camera-widget, .graph-widget, .controls-widget { grid-column: span 1; }
+
+    /* Footer */
+    .footer-grid { grid-template-columns: 1fr; text-align: center; }
+    .footer-column h4::after { left: 50%; transform: translateX(-50%); }
+    .social-links { justify-content: center; }
+}
+
+/* --- Animaciones (se quedan al final) --- */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes zoomIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-15px); } 60% { transform: translateX(-50%) translateY(-7px); } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(88, 166, 255, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(88, 166, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(88, 166, 255, 0); } }
