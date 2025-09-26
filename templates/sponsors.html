@@ -40,7 +40,7 @@
                  .then(sponsorsData => {
                      sponsorsData.forEach(sponsor => {
                          const sponsorCard = document.createElement('a');
-                         sponsorCard.href = `sponsor-detail.html?id=${sponsor.id}`;
+                         sponsorCard.href = `sponsor-detail?id=${sponsor.id}`;
                          sponsorCard.className = 'sponsor-card';
          
                          sponsorCard.innerHTML = `
