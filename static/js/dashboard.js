@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // --- Función de Reseteo y Conexión SSE ---
     function resetDashboardUI() { statusTextEl.textContent = "STANDBY"; altitudeEl.innerHTML = `0.00 <span class="unit">m</span>`; accelerationEl.innerHTML = `0.00 <span class="unit">m/s²</span>`; pressureEl.innerHTML = `1013.25 <span class="unit">hPa</span>`; temperatureEl.innerHTML = `25.0 <span class="unit">°C</span>`; Object.keys(dataHistory).forEach(key => dataHistory[key] = []); telemetryChart.data.labels = []; telemetryChart.data.datasets[0].data = []; telemetryChart.update(); const initialLatLng = [19.5012, -99.4520]; rocketMarker.setLatLng(initialLatLng); map.setView(initialLatLng, 13); }
-    const eventSource = new EventSource("http://127.0.0.1:5001/api/telemetry-stream");
+    const eventSource = new EventSource("/api/telemetry-stream");
     eventSource.onmessage = function(event) {
         const data = JSON.parse(event.data);
         if (data.status === "standby") { resetDashboardUI(); return; }
