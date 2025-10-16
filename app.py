@@ -635,6 +635,7 @@ def change_password():
 telemetry_state = { "status": "standby", "altitude": 0, "temperature": 25, "acceleration": 0, "pressure": 1013.25, "orientation": {"roll": 0, "pitch": 0, "yaw": 0}, "latitude": 19.5012, "longitude": -99.4520 }
 simulation_running = False
 simulation_time = 0
+data_source_mode = "standby"  # "simulation", "real", "standby"
 
 def run_simulation_step():
     """Modifica el estado global con un paso de la simulación."""
@@ -685,7 +686,7 @@ def ingest_telemetry():
     Recibe datos de telemetría de una fuente externa (ej. Arduino),
     actualiza el estado en vivo y guarda los datos en un CSV.
     """
-    global telemetry_state
+    global telemetry_state, data_source_mode
     
     data = request.get_json()
 
@@ -694,14 +695,18 @@ def ingest_telemetry():
     if data.get("api_key") != SECRET_API_KEY:
         return jsonify({"error": "Clave de API inválida"}), 403
 
-    telemetry_state["status"] = data.get("status", telemetry_state["status"])
-    telemetry_state["altitude"] = data.get("altitude", telemetry_state["altitude"])
-    telemetry_state["temperature"] = data.get("temperature", telemetry_state["temperature"])
-    telemetry_state["acceleration"] = data.get("acceleration", telemetry_state["acceleration"])
-    telemetry_state["pressure"] = data.get("pressure", telemetry_state["pressure"])
-    telemetry_state["orientation"] = data.get("orientation", telemetry_state["orientation"])
-    telemetry_state["latitude"] = data.get("latitude", telemetry_state["latitude"])
-    telemetry_state["longitude"] = data.get("longitude", telemetry_state["longitude"])
+    # Solo actualizar si no estamos en modo simulación
+    if data_source_mode != "simulation":
+        telemetry_state["status"] = data.get("status", telemetry_state["status"])
+        telemetry_state["altitude"] = data.get("altitude", telemetry_state["altitude"])
+        telemetry_state["temperature"] = data.get("temperature", telemetry_state["temperature"])
+        telemetry_state["acceleration"] = data.get("acceleration", telemetry_state["acceleration"])
+        telemetry_state["pressure"] = data.get("pressure", telemetry_state["pressure"])
+        telemetry_state["orientation"] = data.get("orientation", telemetry_state["orientation"])
+        telemetry_state["latitude"] = data.get("latitude", telemetry_state["latitude"])
+        telemetry_state["longitude"] = data.get("longitude", telemetry_state["longitude"])
+        
+        data_source_mode = "real"  # Marcar que estamos usando datos reales
     
     log_to_csv(data)
 
@@ -709,16 +714,18 @@ def ingest_telemetry():
 
 @app.route('/api/start-simulation', methods=['POST'])
 def start_simulation():
-    global simulation_running, simulation_time
+    global simulation_running, simulation_time, data_source_mode
     simulation_running = True
     simulation_time = 0
+    data_source_mode = "simulation"  # Marcar modo simulación
     return jsonify({"message": "Simulación iniciada"})
 
 @app.route('/api/stop-simulation', methods=['POST'])
 def stop_simulation():
-    global simulation_running
+    global simulation_running, data_source_mode
     simulation_running = False
     telemetry_state["status"] = "standby"
+    data_source_mode = "standby"  # Volver a modo standby
     return jsonify({"message": "Simulación detenida"})
 
 
