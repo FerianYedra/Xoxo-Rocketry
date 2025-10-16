@@ -23,6 +23,33 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Bloquea/desbloquea el scroll del body cuando el menú está abierto
                     document.body.classList.toggle('no-scroll');
                 });
+                
+                // Cerrar menú al hacer clic en un enlace
+                const navLinks = navMenu.querySelectorAll('.nav-links a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        document.body.classList.remove('no-scroll');
+                    });
+                });
+                
+                // Lógica para dropdowns en móvil (click en lugar de hover)
+                const dropdowns = navMenu.querySelectorAll('.dropdown');
+                dropdowns.forEach(dropdown => {
+                    const dropdownLink = dropdown.querySelector('> a');
+                    const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                    
+                    if (dropdownLink && dropdownMenu) {
+                        dropdownLink.addEventListener('click', (e) => {
+                            // Solo en móvil, prevenir el comportamiento por defecto
+                            if (window.innerWidth <= 992) {
+                                e.preventDefault();
+                                dropdown.classList.toggle('active');
+                            }
+                        });
+                    }
+                });
             }
 
             // 2. LÓGICA PARA POBLAR EL DROPDOWN DE INTEGRANTES

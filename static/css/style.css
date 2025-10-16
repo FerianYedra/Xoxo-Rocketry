@@ -27,7 +27,9 @@ body {
 
 body.no-scroll {
     overflow: hidden;
-
+    position: fixed;
+    width: 100%;
+    height: 100%;
 }
 
 .navigation-wrapper {
@@ -536,12 +538,23 @@ footer {
     /* Hacemos que el menú desplegable sea parte del flujo normal */
     .dropdown-menu {
         position: static; /* MUY IMPORTANTE: Reseteamos la posición */
-        opacity: 1;
+        opacity: 0;
         transform: none;
-        pointer-events: auto;
+        pointer-events: none;
         box-shadow: none;
         background: none;
         padding-left: 1.5rem; /* Indentamos los sub-items */
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 0.3s ease, max-height 0.3s ease;
+    }
+    
+    /* Mostramos el dropdown cuando el menú móvil está activo y se hace hover o click */
+    .nav-menu.active .dropdown:hover .dropdown-menu,
+    .nav-menu.active .dropdown.active .dropdown-menu {
+        opacity: 1;
+        pointer-events: auto;
+        max-height: 200px;
     }
 
     .dropdown-menu a {
