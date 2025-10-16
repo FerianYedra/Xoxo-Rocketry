@@ -17,6 +17,8 @@ import numpy as np
 import math
 from functools import wraps
 from flask import abort
+import threading
+import queue
 
 # =======================================================
 # 1. CONFIGURACIÓN DE LA APLICACIÓN
@@ -637,6 +639,25 @@ simulation_running = False
 simulation_time = 0
 data_source_mode = "standby"  # "simulation", "real", "standby"
 
+# --- Variables para manejo de streaming ---
+telemetry_queue = queue.Queue()
+active_connections = set()
+
+def broadcast_telemetry():
+    """Envía datos de telemetría a todas las conexiones activas."""
+    global telemetry_state
+    try:
+        data = f"data: {json.dumps(telemetry_state)}\n\n"
+        # Enviar a todas las conexiones activas
+        for connection in list(active_connections):
+            try:
+                connection.put(data)
+            except:
+                # Si hay error, remover la conexión
+                active_connections.discard(connection)
+    except Exception as e:
+        print(f"Error broadcasting telemetry: {e}")
+
 def run_simulation_step():
     """Modifica el estado global con un paso de la simulación."""
     global simulation_time, telemetry_state
@@ -670,15 +691,46 @@ def run_simulation_step():
     telemetry_state["orientation"]["yaw"] += random.uniform(-0.1, 0.1)
 
     simulation_time += 1
+    
+    # Broadcast los datos actualizados
+    broadcast_telemetry()
 
 @app.route('/api/telemetry-stream')
 def telemetry_stream():
     def generate():
-        while True:
-            if simulation_running: run_simulation_step()
+        # Crear una cola para esta conexión específica
+        connection_queue = queue.Queue()
+        active_connections.add(connection_queue)
+        
+        try:
+            # Enviar datos iniciales
             yield f"data: {json.dumps(telemetry_state)}\n\n"
-            time.sleep(0.5)
-    return Response(generate(), mimetype='text/event-stream')
+            
+            # Mantener la conexión activa con timeout
+            timeout_count = 0
+            max_timeout = 300  # 5 minutos máximo
+            
+            while timeout_count < max_timeout:
+                try:
+                    # Intentar obtener datos con timeout de 1 segundo
+                    data = connection_queue.get(timeout=1)
+                    yield data
+                    timeout_count = 0  # Reset timeout si recibimos datos
+                except queue.Empty:
+                    # Si no hay datos nuevos, enviar heartbeat
+                    yield f"data: {json.dumps(telemetry_state)}\n\n"
+                    timeout_count += 1
+                    
+        finally:
+            # Limpiar la conexión cuando termine
+            active_connections.discard(connection_queue)
+    
+    return Response(generate(), mimetype='text/event-stream', headers={
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Cache-Control'
+    })
 
 @app.route('/api/ingest', methods=['POST'])
 def ingest_telemetry():
@@ -707,6 +759,9 @@ def ingest_telemetry():
         telemetry_state["longitude"] = data.get("longitude", telemetry_state["longitude"])
         
         data_source_mode = "real"  # Marcar que estamos usando datos reales
+        
+        # Broadcast los datos actualizados
+        broadcast_telemetry()
     
     log_to_csv(data)
 
@@ -726,11 +781,26 @@ def stop_simulation():
     simulation_running = False
     telemetry_state["status"] = "standby"
     data_source_mode = "standby"  # Volver a modo standby
+    broadcast_telemetry()  # Enviar estado final
     return jsonify({"message": "Simulación detenida"})
+
+def simulation_worker():
+    """Worker thread que ejecuta la simulación sin bloquear el servidor principal."""
+    global simulation_running
+    while True:
+        if simulation_running:
+            run_simulation_step()
+            time.sleep(0.5)  # 0.5 segundos entre actualizaciones
+        else:
+            time.sleep(1)  # Esperar más tiempo cuando no hay simulación
 
 
 # =======================================================
 # 6. INICIO DE LA APLICACIÓN
 # =======================================================
 if __name__ == '__main__':
+    # Iniciar el hilo de simulación en background
+    simulation_thread = threading.Thread(target=simulation_worker, daemon=True)
+    simulation_thread.start()
+    
     app.run(debug=True, port=5001)
