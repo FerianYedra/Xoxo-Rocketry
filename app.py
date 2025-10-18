@@ -17,6 +17,8 @@ import numpy as np
 import math
 from functools import wraps
 from flask import abort
+import threading
+import queue
 
 # =======================================================
 # 1. CONFIGURACIÓN DE LA APLICACIÓN
@@ -635,6 +637,26 @@ def change_password():
 telemetry_state = { "status": "standby", "altitude": 0, "temperature": 25, "acceleration": 0, "pressure": 1013.25, "orientation": {"roll": 0, "pitch": 0, "yaw": 0}, "latitude": 19.5012, "longitude": -99.4520 }
 simulation_running = False
 simulation_time = 0
+data_source_mode = "standby"  # "simulation", "real", "standby"
+
+# --- Variables para manejo de streaming ---
+telemetry_queue = queue.Queue()
+active_connections = set()
+
+def broadcast_telemetry():
+    """Envía datos de telemetría a todas las conexiones activas."""
+    global telemetry_state
+    try:
+        data = f"data: {json.dumps(telemetry_state)}\n\n"
+        # Enviar a todas las conexiones activas
+        for connection in list(active_connections):
+            try:
+                connection.put(data)
+            except:
+                # Si hay error, remover la conexión
+                active_connections.discard(connection)
+    except Exception as e:
+        print(f"Error broadcasting telemetry: {e}")
 
 def run_simulation_step():
     """Modifica el estado global con un paso de la simulación."""
@@ -669,15 +691,46 @@ def run_simulation_step():
     telemetry_state["orientation"]["yaw"] += random.uniform(-0.1, 0.1)
 
     simulation_time += 1
+    
+    # Broadcast los datos actualizados
+    broadcast_telemetry()
 
 @app.route('/api/telemetry-stream')
 def telemetry_stream():
     def generate():
-        while True:
-            if simulation_running: run_simulation_step()
+        # Crear una cola para esta conexión específica
+        connection_queue = queue.Queue()
+        active_connections.add(connection_queue)
+        
+        try:
+            # Enviar datos iniciales
             yield f"data: {json.dumps(telemetry_state)}\n\n"
-            time.sleep(0.5)
-    return Response(generate(), mimetype='text/event-stream')
+            
+            # Mantener la conexión activa con timeout
+            timeout_count = 0
+            max_timeout = 300  # 5 minutos máximo
+            
+            while timeout_count < max_timeout:
+                try:
+                    # Intentar obtener datos con timeout de 1 segundo
+                    data = connection_queue.get(timeout=1)
+                    yield data
+                    timeout_count = 0  # Reset timeout si recibimos datos
+                except queue.Empty:
+                    # Si no hay datos nuevos, enviar heartbeat
+                    yield f"data: {json.dumps(telemetry_state)}\n\n"
+                    timeout_count += 1
+                    
+        finally:
+            # Limpiar la conexión cuando termine
+            active_connections.discard(connection_queue)
+    
+    return Response(generate(), mimetype='text/event-stream', headers={
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Cache-Control'
+    })
 
 @app.route('/api/ingest', methods=['POST'])
 def ingest_telemetry():
@@ -685,7 +738,7 @@ def ingest_telemetry():
     Recibe datos de telemetría de una fuente externa (ej. Arduino),
     actualiza el estado en vivo y guarda los datos en un CSV.
     """
-    global telemetry_state
+    global telemetry_state, data_source_mode
     
     data = request.get_json()
 
@@ -694,14 +747,21 @@ def ingest_telemetry():
     if data.get("api_key") != SECRET_API_KEY:
         return jsonify({"error": "Clave de API inválida"}), 403
 
-    telemetry_state["status"] = data.get("status", telemetry_state["status"])
-    telemetry_state["altitude"] = data.get("altitude", telemetry_state["altitude"])
-    telemetry_state["temperature"] = data.get("temperature", telemetry_state["temperature"])
-    telemetry_state["acceleration"] = data.get("acceleration", telemetry_state["acceleration"])
-    telemetry_state["pressure"] = data.get("pressure", telemetry_state["pressure"])
-    telemetry_state["orientation"] = data.get("orientation", telemetry_state["orientation"])
-    telemetry_state["latitude"] = data.get("latitude", telemetry_state["latitude"])
-    telemetry_state["longitude"] = data.get("longitude", telemetry_state["longitude"])
+    # Solo actualizar si no estamos en modo simulación
+    if data_source_mode != "simulation":
+        telemetry_state["status"] = data.get("status", telemetry_state["status"])
+        telemetry_state["altitude"] = data.get("altitude", telemetry_state["altitude"])
+        telemetry_state["temperature"] = data.get("temperature", telemetry_state["temperature"])
+        telemetry_state["acceleration"] = data.get("acceleration", telemetry_state["acceleration"])
+        telemetry_state["pressure"] = data.get("pressure", telemetry_state["pressure"])
+        telemetry_state["orientation"] = data.get("orientation", telemetry_state["orientation"])
+        telemetry_state["latitude"] = data.get("latitude", telemetry_state["latitude"])
+        telemetry_state["longitude"] = data.get("longitude", telemetry_state["longitude"])
+        
+        data_source_mode = "real"  # Marcar que estamos usando datos reales
+        
+        # Broadcast los datos actualizados
+        broadcast_telemetry()
     
     log_to_csv(data)
 
@@ -709,21 +769,38 @@ def ingest_telemetry():
 
 @app.route('/api/start-simulation', methods=['POST'])
 def start_simulation():
-    global simulation_running, simulation_time
+    global simulation_running, simulation_time, data_source_mode
     simulation_running = True
     simulation_time = 0
+    data_source_mode = "simulation"  # Marcar modo simulación
     return jsonify({"message": "Simulación iniciada"})
 
 @app.route('/api/stop-simulation', methods=['POST'])
 def stop_simulation():
-    global simulation_running
+    global simulation_running, data_source_mode
     simulation_running = False
     telemetry_state["status"] = "standby"
+    data_source_mode = "standby"  # Volver a modo standby
+    broadcast_telemetry()  # Enviar estado final
     return jsonify({"message": "Simulación detenida"})
+
+def simulation_worker():
+    """Worker thread que ejecuta la simulación sin bloquear el servidor principal."""
+    global simulation_running
+    while True:
+        if simulation_running:
+            run_simulation_step()
+            time.sleep(0.5)  # 0.5 segundos entre actualizaciones
+        else:
+            time.sleep(1)  # Esperar más tiempo cuando no hay simulación
 
 
 # =======================================================
 # 6. INICIO DE LA APLICACIÓN
 # =======================================================
 if __name__ == '__main__':
+    # Iniciar el hilo de simulación en background
+    simulation_thread = threading.Thread(target=simulation_worker, daemon=True)
+    simulation_thread.start()
+    
     app.run(debug=True, port=5001)
