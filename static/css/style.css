@@ -1803,7 +1803,84 @@ body:not(.admin-page) * {
 .map-widget { grid-column: span 2; }
 #map { height: 100%; min-height: 350px; border-radius: 8px; }
 .camera-widget { grid-column: span 1; }
-#camera-feed { flex-grow: 1; background-color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #555; }
+#camera-feed { 
+    flex-grow: 1; 
+    background-color: #000; 
+    border-radius: 8px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    color: #555;
+    position: relative;
+    min-height: 200px;
+}
+
+#camera-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+#no-signal-text {
+    position: absolute;
+    z-index: 1;
+}
+
+/* Controles de cámara */
+.camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.camera-btn {
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 6px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.start-btn:hover { background: #28a745; }
+.stop-btn:hover { background: #dc3545; }
+.settings-btn:hover { background: #ffc107; color: #000; }
+
+.camera-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+}
+
+.status-indicator {
+    font-size: 1.2rem;
+}
+
+.status-online { color: #28a745; }
+.status-offline { color: #dc3545; }
+.status-loading { color: #ffc107; }
 
 /* Fila 3: Controles y Gráficos */
 .controls-widget { grid-column: span 1; justify-content: space-between; }

@@ -24,7 +24,7 @@ import queue
 # 1. CONFIGURACIÓN DE LA APLICACIÓN
 # =======================================================
 app = Flask(__name__, template_folder='templates')
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', ':j$n&8WWw\:!N--3A*d5jgQM|nr6aU') # ¡Esto debería ser más aleatorio en producción!
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'Key') # ¡Esto debería ser más aleatorio en producción!
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 CORS(app)
 
@@ -783,6 +783,86 @@ def stop_simulation():
     data_source_mode = "standby"  # Volver a modo standby
     broadcast_telemetry()  # Enviar estado final
     return jsonify({"message": "Simulación detenida"})
+
+# =======================================================
+# 7. RUTAS DE API PARA CÁMARA
+# =======================================================
+
+@app.route('/api/camera/config', methods=['GET', 'POST'])
+def camera_config():
+    """Maneja la configuración de la cámara."""
+    config_file = 'database/camera_config.json'
+    
+    if request.method == 'GET':
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            return jsonify(config)
+        except FileNotFoundError:
+            return jsonify({"videoId": "", "isActive": False})
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        video_id = data.get('videoId', '')
+        is_active = data.get('isActive', False)
+        disabled = data.get('disabled', False)
+        
+        config = {
+            "videoId": video_id,
+            "isActive": is_active and not disabled and bool(video_id),
+            "disabled": disabled,
+            "lastUpdated": datetime.now().isoformat()
+        }
+        
+        with open(config_file, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+        
+        log_change("System", f"Configuración de trasmisión actualizada: {video_id}")
+        return jsonify({"message": "Configuración guardada", "config": config})
+
+@app.route('/api/live-stream/config', methods=['GET', 'POST'])
+def live_stream_config():
+    """Maneja la configuración del video de transmisión en vivo."""
+    config_file = 'database/live_stream_config.json'
+    
+    if request.method == 'GET':
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            return jsonify(config)
+        except FileNotFoundError:
+            return jsonify({"videoId": "", "isActive": False})
+    
+    elif request.method == 'POST':
+        data = request.get_json()
+        video_id = data.get('videoId', '')
+        is_active = data.get('isActive', False)
+        disabled = data.get('disabled', False)
+        
+        config = {
+            "videoId": video_id,
+            "isActive": is_active and not disabled and bool(video_id),
+            "disabled": disabled,
+            "lastUpdated": datetime.now().isoformat()
+        }
+        
+        with open(config_file, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+        
+        log_change("System", f"Configuración de transmisión en vivo actualizada: {video_id}")
+        return jsonify({"message": "Configuración guardada", "config": config})
+
+@app.route('/admin/camera', methods=['GET', 'POST'])
+@login_required
+def camera_settings():
+    """Muestra y procesa la configuración de la cámara."""
+    return render_template('camera_settings.html')
+
+@app.route('/admin/live-stream', methods=['GET', 'POST'])
+@login_required
+def live_stream_settings():
+    """Muestra y procesa la configuración de la transmisión en vivo."""
+    return render_template('live_stream_settings.html')
 
 def simulation_worker():
     """Worker thread que ejecuta la simulación sin bloquear el servidor principal."""

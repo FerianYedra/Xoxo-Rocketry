@@ -34,7 +34,23 @@
                     <!-- Fila 2: Visualización -->
                     <div class="widget live-renderer-widget"><span class="widget-label">Orientación en Vivo</span><div id="live-renderer-container"></div></div>
                     <div class="widget map-widget"><span class="widget-label">Posicionamiento GPS</span><div id="map"></div></div>
-                    <div class="widget camera-widget"><span class="widget-label">Cámara a Bordo</span><div id="camera-feed"><span>NO SIGNAL</span></div></div>
+                    <div class="widget camera-widget">
+                        <span class="widget-label">Transmisión en vivo</span>
+                        <div id="camera-feed">
+                            <iframe id="camera-iframe" 
+                                    src="" 
+                                    frameborder="0" 
+                                    allowfullscreen
+                                    allow="autoplay; encrypted-media"
+                                    style="display: none;">
+                            </iframe>
+                            <span id="no-signal-text">NO SIGNAL</span>
+                        </div>
+                        <div id="camera-status" class="camera-status">
+                            <span id="status-indicator" class="status-offline">●</span>
+                            <span id="status-text">Offline</span>
+                        </div>
+                    </div>
                     
                     <!-- Fila 3: Controles y Gráficos -->
                     <div class="widget controls-widget">
@@ -103,6 +119,8 @@
     
     <!-- He movido main.js aquí para que se cargue antes que dashboard.js -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/camera-control.js') }}"></script>
+    
     <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>
