@@ -15,3 +15,6 @@ data.json
 
 # Archivos de Sistema
 .DS_Store
+
+#Correr en windows
+start_server.bat
