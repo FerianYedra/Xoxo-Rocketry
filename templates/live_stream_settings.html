@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Transmisión en Vivo - XOXO Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .live-stream-settings {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        .live-stream-form {
+            background-color: var(--secondary-color);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        }
+        
+        .help-text {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        .current-config {
+            background-color: var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        .config-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .status-active { background-color: #28a745; }
+        .status-inactive { background-color: #dc3545; }
+        
+        .config-info {
+            color: var(--text-color);
+        }
+        
+        .config-info strong {
+            color: white;
+        }
+        
+        /* Asegurar que el cursor personalizado funcione */
+        body {
+            cursor: none;
+        }
+        
+        .custom-cursor {
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <div class="live-stream-settings">
+            <h1>Configuración de Cámara</h1>
+            <p>Gestiona el video de transmisión en vivo que se muestra en la parte inferior del dashboard.</p>
+            
+            <!-- Configuración actual -->
+            <div class="current-config">
+                <h3>Estado Actual</h3>
+                <div class="config-status">
+                    <div id="status-indicator" class="status-indicator status-inactive"></div>
+                    <span id="status-text">Cargando...</span>
+                </div>
+                <div class="config-info">
+                    <p><strong>Video ID:</strong> <span id="current-video-id">-</span></p>
+                    <p><strong>Última actualización:</strong> <span id="last-updated">-</span></p>
+                </div>
+            </div>
+            
+            <!-- Formulario de configuración -->
+            <div class="live-stream-form">
+                <h3>Configurar Video de Transmisión</h3>
+                <form id="live-stream-form">
+                    <div class="form-group">
+                        <label for="video-id">ID del Video de YouTube</label>
+                        <input type="text" id="video-id" name="videoId" placeholder="Ej: 1lOUJPeONVM" required>
+                        <div class="help-text">
+                            Ingresa solo el ID del video (la parte después de "v=" en la URL de YouTube).<br>
+                            Ejemplo: Si la URL es "https://www.youtube.com/watch?v=1lOUJPeONVM", ingresa "1lOUJPeONVM"
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="activate-stream" name="isActive" checked>
+                            Activar transmisión automáticamente
+                        </label>
+                        <div class="help-text">
+                            Si está marcado, el video se mostrará automáticamente en el dashboard.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="disable-stream" name="disableStream">
+                            Desactivar transmisión completamente
+                        </label>
+                        <div class="help-text">
+                            Si está marcado, el widget de transmisión se ocultará completamente del dashboard.
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="cta-button">Guardar Configuración</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    
+    <div class="custom-cursor"></div>
+    <canvas id="particle-trail-canvas"></canvas>
+    <div class="star-container"></div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Cargar configuración actual
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch('/api/live-stream/config');
+                const config = await response.json();
+                
+                document.getElementById('video-id').value = config.videoId || '';
+                document.getElementById('activate-stream').checked = config.isActive || false;
+                document.getElementById('disable-stream').checked = config.disabled || false;
+                document.getElementById('current-video-id').textContent = config.videoId || 'No configurado';
+                document.getElementById('last-updated').textContent = config.lastUpdated || 'Nunca';
+                
+                // Actualizar indicador de estado
+                const statusIndicator = document.getElementById('status-indicator');
+                const statusText = document.getElementById('status-text');
+                
+                if (config.disabled) {
+                    statusIndicator.className = 'status-indicator status-inactive';
+                    statusText.textContent = 'Desactivado';
+                } else if (config.isActive && config.videoId) {
+                    statusIndicator.className = 'status-indicator status-active';
+                    statusText.textContent = 'Activo';
+                } else {
+                    statusIndicator.className = 'status-indicator status-inactive';
+                    statusText.textContent = 'Inactivo';
+                }
+            } catch (error) {
+                console.error('Error loading config:', error);
+            }
+        }
+        
+        // Manejar envío del formulario
+        document.getElementById('live-stream-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const config = {
+                videoId: formData.get('videoId'),
+                isActive: formData.has('isActive'),
+                disabled: formData.has('disableStream')
+            };
+            
+            try {
+                const response = await fetch('/api/live-stream/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                if (response.ok) {
+                    alert('Configuración guardada exitosamente');
+                    loadCurrentConfig(); // Recargar la configuración
+                } else {
+                    alert('Error al guardar la configuración');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar la configuración');
+            }
+        });
+        
+        // Cargar configuración al iniciar
+        document.addEventListener('DOMContentLoaded', loadCurrentConfig);
+    </script>
+</body>
+</html>

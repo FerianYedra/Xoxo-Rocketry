@@ -72,6 +72,18 @@
             </div>
 
             <div class="admin-card">
+                <h3>Configurar Transmisión</h3>
+                <p>Gestiona el video de transmisión en vivo.</p>
+                <a href="{{ url_for('camera_settings') }}" class="cta-button">Configurar Transmisión</a>
+            </div>
+
+            <div class="admin-card">
+                <h3>Configurar Cámara</h3>
+                <p>Gestiona la cámara a bordo que se muestra en el dashboard de misión.</p>
+                <a href="{{ url_for('live_stream_settings') }}" class="cta-button">Configurar Cámara</a>
+            </div>
+
+            <div class="admin-card">
                 <h3>Seguridad</h3>
                 <p>Actualiza tu contraseña de acceso al panel de administración para mantener tu cuenta segura.</p>
                 <a href="{{ url_for('change_password') }}" class="cta-button">Cambiar Contraseña</a>
