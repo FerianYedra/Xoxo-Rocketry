@@ -870,7 +870,7 @@ def simulation_worker():
     while True:
         if simulation_running:
             run_simulation_step()
-            time.sleep(0.5)  # 0.5 segundos entre actualizaciones
+            time.sleep(1)  # 0.5 segundos entre actualizaciones
         else:
             time.sleep(1)  # Esperar más tiempo cuando no hay simulación
 

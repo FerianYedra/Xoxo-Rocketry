@@ -49,6 +49,62 @@ body.no-scroll {
     overflow: hidden; /* Previene barras de scroll si una estrella se sale */
 }
 
+/* =============== ANÁLISIS DE IA =============== */
+.ai-analysis-container {
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.ai-analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.ai-analysis-header h2 {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.ai-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-status-indicator .status-offline {
+    color: #f85149;
+}
+
+.ai-status-indicator .status-online {
+    color: #3fb950;
+}
+
+#ai-analysis-content {
+    min-height: 80px;
+    background-color: rgba(13, 17, 23, 0.5);
+    border-radius: 8px;
+    padding: 15px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    transition: all 0.3s ease;
+}
+
+#ai-message {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .star {
     position: absolute;
     background-color: white;
