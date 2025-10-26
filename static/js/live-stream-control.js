@@ -2,11 +2,17 @@
 class LiveStreamController {
     constructor() {
         this.liveStreamIframe = document.getElementById('video-iframe');
-        this.liveStreamWidget = document.querySelector('.video-widget');
+        this.liveStreamWidget = document.querySelector('.video-widget.full-width');
         this.isActive = false;
         this.currentVideoId = null;
         
-        this.loadLiveStreamConfig();
+        // Iniciar la carga de configuración solo si estamos en la página del dashboard
+        if (this.liveStreamIframe && this.liveStreamWidget) {
+            this.loadLiveStreamConfig();
+            
+            // Agregar un intervalo para verificar la configuración periódicamente
+            setInterval(() => this.loadLiveStreamConfig(), 30000); // Verificar cada 30 segundos
+        }
     }
     
     async loadLiveStreamConfig() {
@@ -14,19 +20,24 @@ class LiveStreamController {
             const response = await fetch('/api/live-stream/config');
             const config = await response.json();
             
+            console.log('Live stream config loaded:', config);
+            
             if (config.disabled) {
                 this.hideWidget();
                 return;
             }
             
             if (config.isActive && config.videoId) {
-                this.currentVideoId = config.videoId;
-                this.startLiveStream();
+                // Solo actualizar si el ID del video cambió o si estaba inactivo
+                if (this.currentVideoId !== config.videoId || !this.isActive) {
+                    this.currentVideoId = config.videoId;
+                    this.startLiveStream();
+                }
             } else {
                 this.hideWidget();
             }
         } catch (error) {
-            console.log('No live stream config found, hiding widget');
+            console.error('Error loading live stream config:', error);
             this.hideWidget();
         }
     }
@@ -57,8 +68,15 @@ class LiveStreamController {
             this.liveStreamWidget.style.display = 'none';
         }
         this.isActive = false;
+        
+        // Limpiar el iframe para evitar que siga cargando recursos
+        if (this.liveStreamIframe) {
+            this.liveStreamIframe.src = '';
+        }
     }
 }
 
-// Crear instancia global
-window.liveStreamController = new LiveStreamController();
+// Crear instancia global cuando el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', () => {
+    window.liveStreamController = new LiveStreamController();
+});
