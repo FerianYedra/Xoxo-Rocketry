@@ -14,6 +14,20 @@
 
     <main id="dashboard-main">
         <div class="container">
+            <!-- Nuevo espacio para análisis de IA -->
+            <div class="ai-analysis-container">
+                <div class="ai-analysis-header">
+                    <h2>Análisis en tiempo real</h2>
+                    <div class="ai-status-indicator">
+                        <span id="ai-status-dot" class="status-offline">●</span>
+                        <span id="ai-status-text">Esperando datos</span>
+                    </div>
+                </div>
+                <div id="ai-analysis-content">
+                    <p id="ai-message">Espera nuestro siguiente vuelo</p>
+                </div>
+            </div>
+
             <div class="dashboard-header">
                 <h1>Dashboard de Misión: <span id="status-text" class="status-standby">STANDBY</span></h1>
                 <div class="view-tabs">
@@ -122,6 +136,7 @@
     <script src="{{ url_for('static', filename='js/camera-control.js') }}"></script>
     <script src="{{ url_for('static', filename='js/live-stream-control.js') }}"></script>
     
+    <!-- Módulos para el dashboard y análisis de IA -->
     <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

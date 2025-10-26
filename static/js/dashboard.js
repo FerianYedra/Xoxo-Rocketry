@@ -3,6 +3,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import AIAnalyzer from './ai-analysis.js';
+import { GEMINI_API_KEY } from './config.js';
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -15,6 +17,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let selectedGraphParam = 'altitude';
     const dataHistory = { altitude: [], acceleration: [], pressure: [], temperature: [] };
     const MAX_DATA_POINTS = 100;
+    
+    // --- Inicialización del Analizador de IA ---
+    const aiAnalyzer = new AIAnalyzer();
+    aiAnalyzer.init();
 
     // --- Inicialización del Mapa y Gráficos ---
     const map = L.map('map').setView([19.5012, -99.4520], 13);
@@ -112,11 +118,60 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // --- Función de Reseteo y Conexión SSE ---
-    function resetDashboardUI() { statusTextEl.textContent = "STANDBY"; altitudeEl.innerHTML = `0.00 <span class="unit">m</span>`; accelerationEl.innerHTML = `0.00 <span class="unit">m/s²</span>`; pressureEl.innerHTML = `1013.25 <span class="unit">hPa</span>`; temperatureEl.innerHTML = `25.0 <span class="unit">°C</span>`; Object.keys(dataHistory).forEach(key => dataHistory[key] = []); telemetryChart.data.labels = []; telemetryChart.data.datasets[0].data = []; telemetryChart.update(); const initialLatLng = [19.5012, -99.4520]; rocketMarker.setLatLng(initialLatLng); map.setView(initialLatLng, 13); }
+    let lastDataReceivedTime = Date.now(); // Timestamp del último dato recibido
+    let dataTimeoutInterval = null; // Intervalo para verificar timeout
+    const DATA_TIMEOUT = 120000; // 2 minutos en milisegundos
+    
+    function resetDashboardUI() { 
+        statusTextEl.textContent = "STANDBY"; 
+        altitudeEl.innerHTML = `0.00 <span class="unit">m</span>`; 
+        accelerationEl.innerHTML = `0.00 <span class="unit">m/s²</span>`; 
+        pressureEl.innerHTML = `1013.25 <span class="unit">hPa</span>`; 
+        temperatureEl.innerHTML = `25.0 <span class="unit">°C</span>`; 
+        Object.keys(dataHistory).forEach(key => dataHistory[key] = []); 
+        telemetryChart.data.labels = []; 
+        telemetryChart.data.datasets[0].data = []; 
+        telemetryChart.update(); 
+        const initialLatLng = [19.5012, -99.4520]; 
+        rocketMarker.setLatLng(initialLatLng); 
+        map.setView(initialLatLng, 13);
+        
+        // Resetear también el analizador de IA
+        if (aiAnalyzer) {
+            aiAnalyzer.resetToInitialState();
+        }
+    }
+    
+    // Iniciar verificación de timeout de datos
+    function startDataTimeoutCheck() {
+        // Verificar cada 5 segundos si han pasado 2 minutos sin datos
+        dataTimeoutInterval = setInterval(() => {
+            const timeSinceLastData = Date.now() - lastDataReceivedTime;
+            const secondsSinceLastData = Math.floor(timeSinceLastData / 1000);
+            
+            // Si el estado actual no es standby y han pasado 2 minutos sin datos
+            if (statusTextEl.textContent !== "STANDBY" && timeSinceLastData > DATA_TIMEOUT) {
+                console.log(`⏱️ Timeout: ${secondsSinceLastData}s sin datos nuevos, cambiando a STANDBY`);
+                resetDashboardUI();
+            }
+        }, 5000); // Verificar cada 5 segundos
+    }
+    
+    // Iniciar el monitoreo
+    startDataTimeoutCheck();
+    
     const eventSource = new EventSource("/api/telemetry-stream");
     eventSource.onmessage = function(event) {
         const data = JSON.parse(event.data);
-        if (data.status === "standby") { resetDashboardUI(); return; }
+        
+        // Actualizar timestamp del último dato recibido
+        lastDataReceivedTime = Date.now();
+        
+        if (data.status === "standby") { 
+            resetDashboardUI(); 
+            return; 
+        }
+        
         statusTextEl.textContent = data.status.toUpperCase();
         altitudeEl.innerHTML = `${data.altitude.toFixed(2)} <span class="unit">m</span>`;
         accelerationEl.innerHTML = `${data.acceleration.toFixed(2)} <span class="unit">m/s²</span>`;
@@ -129,12 +184,39 @@ document.addEventListener("DOMContentLoaded", function() {
         updateChart();
         const liveModel = liveVisor.getModel();
         if (liveModel) { liveModel.rotation.x = Math.PI + (data.altitude / 1000); liveModel.rotation.z = Math.sin(data.altitude / 100); }
+        
+        // Enviar datos al analizador de IA si la API key está configurada
+        if (aiAnalyzer.apiKey && aiAnalyzer.apiKey.trim() !== '') {
+            // Añadir información adicional al objeto de datos
+            const enhancedData = {
+                ...data,
+                status: statusTextEl.textContent
+            };
+            
+            // Agregar datos al buffer del analizador (nueva lógica)
+            aiAnalyzer.addData(enhancedData);
+        }
     };
 
     // --- Event Listeners para Controles ---
-    document.getElementById('start-sim-btn').addEventListener('click', () => { resetDashboardUI(); fetch('api/start-simulation', { method: 'POST' }); });
-    document.getElementById('stop-sim-btn').addEventListener('click', () => fetch('api/stop-simulation', { method: 'POST' }));
-    document.querySelectorAll('input[name="graph-param"]').forEach(radio => { radio.addEventListener('change', (e) => { selectedGraphParam = e.target.value; updateChart(); }); });
+    document.getElementById('start-sim-btn').addEventListener('click', () => {
+        console.log("Click en start-sim-btn");
+        resetDashboardUI();
+        fetch('api/start-simulation', { method: 'POST' });
+    });
+    
+    document.getElementById('stop-sim-btn').addEventListener('click', () => {
+        fetch('api/stop-simulation', { method: 'POST' });
+        // Resetear el analizador de IA cuando se detiene la simulación (nueva lógica)
+        aiAnalyzer.resetToInitialState();
+    });
+    
+    document.querySelectorAll('input[name="graph-param"]').forEach(radio => { 
+        radio.addEventListener('change', (e) => { 
+            selectedGraphParam = e.target.value; 
+            updateChart(); 
+        }); 
+    });
 
     // --- Activar Vanilla Tilt ---
     VanillaTilt.init(document.querySelectorAll(".widget[data-tilt]"), { max: 5, speed: 400, glare: true, "max-glare": 0.2 });
